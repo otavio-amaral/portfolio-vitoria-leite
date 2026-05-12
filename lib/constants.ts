@@ -27,7 +27,7 @@ export const SITE_CONFIG = {
   stats: [
     { value: 120, label: "posts, campanhas e frames", suffix: "+" },
     { value: 5, label: "anos criando para tela", suffix: "+" },
-    { value: 40, label: "marcas no feed", suffix: "+" },
+    { value: 10, label: "empresas atendidas", suffix: "+" },
     { value: 8, label: "projetos destacados" }
   ],
   navItems: [
