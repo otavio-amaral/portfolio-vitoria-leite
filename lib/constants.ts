@@ -5,7 +5,7 @@ export const SITE_CONFIG = {
   fullName: "Vitória Leite",
   tagline: "Social Media · Fotografia · Video Maker · Direção de Fotografia",
   about:
-    "Vitória cria imagens com cara de agora: conteúdo que nasce para feed, story, pin, reels e campanha, mas ainda carrega direção, intenção e pele. Ela mistura estratégia de social, olhar fotográfico e ritmo de vídeo para transformar marcas em presença visual.",
+    "Vitória cria imagens com cara de agora: conteúdo que nasce para feed, story, pin, reels e campanha, mas ainda carrega direção, intenção e personalidade. Ela mistura estratégia de social, olhar fotográfico e ritmo de vídeo para transformar marcas em presença visual.",
   quote: "Eu gosto quando uma imagem parece print de um momento real, mas foi pensada até o último detalhe.",
   email: "contato@vitorialeite.com",
   whatsapp: "+55 (11) 90000-0000",
