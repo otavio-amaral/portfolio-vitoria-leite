@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { CONTACT_FIELDS, SITE_CONFIG } from "@/lib/constants";
+import { SITE_CONFIG } from "@/lib/constants";
 import { MagneticButton } from "@/components/ui/MagneticButton";
-import { formatWhatsAppLink } from "@/lib/utils";
 
 export function Contact(): JSX.Element {
+  const instagramDmUrl = "https://ig.me/m/viemfoco";
+
   return (
     <section className="bg-bg py-24 md:py-32" id="contato">
       <div className="section-shell grid gap-14 lg:grid-cols-2">
@@ -13,11 +14,8 @@ export function Contact(): JSX.Element {
             manda uma <span className="font-accent text-5xl normal-case text-red md:text-7xl">DM</span> de projeto
           </h2>
           <div className="mt-10 space-y-4 font-ui text-xs uppercase tracking-[0.22em]">
-            <Link href={`mailto:${SITE_CONFIG.email}`} className="block text-text red-accent-line" data-cursor="link">
-              {SITE_CONFIG.email}
-            </Link>
-            <Link href={formatWhatsAppLink(SITE_CONFIG.whatsapp)} className="block text-muted hover:text-text red-accent-line" data-cursor="link">
-              {SITE_CONFIG.whatsapp}
+            <Link href={instagramDmUrl} target="_blank" rel="noreferrer" className="block text-text red-accent-line">
+              {SITE_CONFIG.instagram}
             </Link>
             <p className="text-muted">{SITE_CONFIG.location}</p>
           </div>
@@ -29,36 +27,23 @@ export function Contact(): JSX.Element {
             ))}
           </div>
         </div>
-        <form className="space-y-8" action={`mailto:${SITE_CONFIG.email}`}>
-          {CONTACT_FIELDS.map((field) => (
-            <label className="group relative block pt-5" key={field.id}>
-              <input
-                name={field.id}
-                type={field.type}
-                autoComplete={field.autoComplete}
-                required
-                placeholder=" "
-                className="peer w-full border-0 border-b border-border bg-transparent px-0 pb-3 pt-4 font-ui text-sm uppercase tracking-[0.16em] text-text outline-none transition-colors focus:border-red"
-              />
-              <span className="absolute left-0 top-0 font-ui text-[0.65rem] uppercase tracking-[0.22em] text-muted transition-all peer-placeholder-shown:top-8 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-[0.65rem] peer-focus:text-red">
-                {field.label}
-              </span>
-            </label>
-          ))}
-          <label className="group relative block pt-5">
-            <textarea
-              name="message"
-              required
-              rows={5}
-              placeholder=" "
-              className="peer w-full resize-none border-0 border-b border-border bg-transparent px-0 pb-3 pt-4 font-ui text-sm uppercase tracking-[0.16em] text-text outline-none transition-colors focus:border-red"
-            />
-            <span className="absolute left-0 top-0 font-ui text-[0.65rem] uppercase tracking-[0.22em] text-muted transition-all peer-placeholder-shown:top-8 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-[0.65rem] peer-focus:text-red">
-              {SITE_CONFIG.messageFieldLabel}
-            </span>
-          </label>
-          <MagneticButton type="submit">Enviar mensagem</MagneticButton>
-        </form>
+        <div className="paper-tape sticker rotate-[1.5deg] bg-surface p-8 md:p-10">
+          <p className="font-ui text-xs font-black uppercase tracking-[0.22em] text-red">atalho para orçamento</p>
+          <h3 className="mt-5 font-display text-6xl uppercase leading-none text-text md:text-8xl">
+            chama no <span className="font-accent text-5xl normal-case text-red md:text-7xl">Instagram</span>
+          </h3>
+          <p className="mt-6 max-w-lg font-ui text-lg font-bold leading-relaxed text-muted">
+            Envie uma DM para {SITE_CONFIG.instagram} dizendo “vim pelo site” e conte rapidinho qual é o projeto.
+          </p>
+          <div className="mt-10">
+            <MagneticButton href={instagramDmUrl} ariaLabel="Abrir DM da Vitória no Instagram">
+              Mandar DM no Instagram
+            </MagneticButton>
+          </div>
+          <p className="mt-6 font-ui text-xs font-bold uppercase tracking-[0.16em] text-muted">
+            dica: escreva “vim pelo site” na primeira mensagem
+          </p>
+        </div>
       </div>
     </section>
   );
