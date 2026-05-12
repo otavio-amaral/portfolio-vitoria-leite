@@ -106,44 +106,68 @@ export const TESTIMONIALS: TestimonialItem[] = [
 
 export const SOCIAL_REELS: SocialReelItem[] = [
   {
-    id: "DYNmDFmve7E",
+    id: "DU6d7h9ESx9",
     title: "A Sala Secreta · Reel 01",
+    url: "https://www.instagram.com/reel/DU6d7h9ESx9/",
+    embedUrl: "https://www.instagram.com/reel/DU6d7h9ESx9/embed"
+  },
+  {
+    id: "DU1UXXOEfcv",
+    title: "A Sala Secreta · Reel 02",
+    url: "https://www.instagram.com/reel/DU1UXXOEfcv/",
+    embedUrl: "https://www.instagram.com/reel/DU1UXXOEfcv/embed"
+  },
+  {
+    id: "DSGMEBXkljb",
+    title: "A Sala Secreta · Reel 03",
+    url: "https://www.instagram.com/reel/DSGMEBXkljb/",
+    embedUrl: "https://www.instagram.com/reel/DSGMEBXkljb/embed"
+  },
+  {
+    id: "DRndYJiEuMm",
+    title: "A Sala Secreta · Reel 04",
+    url: "https://www.instagram.com/reel/DRndYJiEuMm/",
+    embedUrl: "https://www.instagram.com/reel/DRndYJiEuMm/embed"
+  },
+  {
+    id: "DYNmDFmve7E",
+    title: "A Sala Secreta · Reel 05",
     url: "https://www.instagram.com/reel/DYNmDFmve7E/",
     embedUrl: "https://www.instagram.com/reel/DYNmDFmve7E/embed"
   },
   {
     id: "DYNZ_Z6MfoS",
-    title: "A Sala Secreta · Reel 02",
+    title: "A Sala Secreta · Reel 06",
     url: "https://www.instagram.com/reel/DYNZ_Z6MfoS/",
     embedUrl: "https://www.instagram.com/reel/DYNZ_Z6MfoS/embed"
   },
   {
     id: "DYKys0SphSH",
-    title: "A Sala Secreta · Reel 03",
+    title: "A Sala Secreta · Reel 07",
     url: "https://www.instagram.com/reel/DYKys0SphSH/",
     embedUrl: "https://www.instagram.com/reel/DYKys0SphSH/embed"
   },
   {
     id: "DYA3eyrspMi",
-    title: "A Sala Secreta · Reel 04",
+    title: "A Sala Secreta · Reel 08",
     url: "https://www.instagram.com/reel/DYA3eyrspMi/",
     embedUrl: "https://www.instagram.com/reel/DYA3eyrspMi/embed"
   },
   {
     id: "DX7lmKTBi0-",
-    title: "A Sala Secreta · Reel 05",
+    title: "A Sala Secreta · Reel 09",
     url: "https://www.instagram.com/reel/DX7lmKTBi0-/",
     embedUrl: "https://www.instagram.com/reel/DX7lmKTBi0-/embed"
   },
   {
     id: "DXP0F9Eh0j6",
-    title: "A Sala Secreta · Reel 06",
+    title: "A Sala Secreta · Reel 10",
     url: "https://www.instagram.com/reel/DXP0F9Eh0j6/",
     embedUrl: "https://www.instagram.com/reel/DXP0F9Eh0j6/embed"
   },
   {
     id: "DXKwWYXDPaP",
-    title: "A Sala Secreta · Reel 07",
+    title: "A Sala Secreta · Reel 11",
     url: "https://www.instagram.com/reel/DXKwWYXDPaP/",
     embedUrl: "https://www.instagram.com/reel/DXKwWYXDPaP/embed"
   }
