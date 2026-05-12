@@ -31,6 +31,7 @@ export const SITE_CONFIG = {
     { value: 8, label: "projetos destacados" }
   ],
   navItems: [
+    { label: "Início", href: "#inicio", icon: "home" },
     { label: "Sobre", href: "#sobre", icon: "spark" },
     { label: "Feed", href: "#portfolio", icon: "grid" },
     { label: "Reel", href: "#showreel", icon: "play" },
