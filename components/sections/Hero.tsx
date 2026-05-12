@@ -71,6 +71,16 @@ export function Hero(): JSX.Element {
       </div>
       <div className="section-shell relative grid min-h-[86svh] content-center gap-8 lg:grid-cols-[0.82fr_1.18fr]">
         <div className="relative z-20 flex flex-col justify-end pt-24 lg:order-2">
+          <div className="mb-5 w-fit rotate-[2deg] bg-text p-2 shadow-[0_12px_28px_rgba(26,26,26,0.14)]">
+            <Image
+              src={SITE_CONFIG.logoUrl}
+              alt="Logo Vi em Foco Fotografia"
+              width={138}
+              height={138}
+              className="h-20 w-20 object-contain md:h-24 md:w-24"
+              priority
+            />
+          </div>
           <h1 className="pointer-events-none max-w-full font-display text-[clamp(5.8rem,15vw,12rem)] uppercase leading-[0.78] tracking-normal text-text mix-blend-multiply">
             {SITE_CONFIG.name.toUpperCase()}
           </h1>

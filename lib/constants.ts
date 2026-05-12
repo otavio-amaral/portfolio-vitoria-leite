@@ -14,6 +14,7 @@ export const SITE_CONFIG = {
   location: "São Paulo, Brasil",
   heroVideoUrl: "/showreel.mp4",
   heroPosterUrl: "https://drive.google.com/thumbnail?id=1&sz=w1600",
+  logoUrl: "/images/logo-viemfoco.png",
   portraitUrl: "/images/vitoria-principal.jpeg",
   mainPortraitUrl: "/images/vitoria-principal.jpeg",
   localPortraits: [
