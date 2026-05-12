@@ -1,0 +1,121 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg: #faf9f7;
+  --color-surface: #ffffff;
+  --color-border: #e8ded7;
+  --color-text: #1a1a1a;
+  --color-muted: #746b64;
+  --color-red: #e8142b;
+  --color-red-dark: #b80e22;
+  --color-red-glow: rgba(232, 20, 43, 0.24);
+  --color-rose: #f0c4b0;
+  --color-highlight: #f5e642;
+  --color-sage: #b8c5a3;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  background: var(--color-bg);
+}
+
+body {
+  overflow-x: hidden;
+  min-height: 100vh;
+  margin: 0;
+  color: var(--color-text);
+  background:
+    linear-gradient(rgba(26, 26, 26, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26, 26, 26, 0.025) 1px, transparent 1px),
+    radial-gradient(circle at 12% 14%, rgba(245, 230, 66, 0.34), transparent 19rem),
+    radial-gradient(circle at 90% 10%, rgba(240, 196, 176, 0.42), transparent 22rem),
+    #faf9f7;
+  background-size: 26px 26px, 26px 26px, auto, auto, auto;
+  font-family: var(--font-body);
+}
+
+a,
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  border: 0;
+}
+
+::selection {
+  color: var(--color-text);
+  background: var(--color-red-dark);
+}
+
+.red-accent-line {
+  position: relative;
+}
+
+.red-accent-line::after {
+  position: absolute;
+  right: 0;
+  bottom: -0.45rem;
+  left: 0;
+  height: 1px;
+  content: "";
+  background: var(--color-red);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 240ms ease;
+}
+
+.red-accent-line:hover::after,
+.red-accent-line:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.section-shell {
+  width: min(100% - 1.5rem, 1180px);
+  margin-inline: auto;
+}
+
+.sr-focus {
+  outline: 1px solid var(--color-red);
+  outline-offset: 0.35rem;
+}
+
+.font-ui {
+  font-family: var(--font-body);
+}
+
+.font-accent {
+  font-family: var(--font-accent);
+}
+
+.sticker {
+  border: 8px solid #fff;
+  background: #fff;
+  box-shadow: 0 16px 34px rgba(26, 26, 26, 0.14);
+}
+
+.paper-tape {
+  position: relative;
+}
+
+.paper-tape::before {
+  position: absolute;
+  top: -0.9rem;
+  left: 50%;
+  z-index: 5;
+  width: 5.8rem;
+  height: 1.6rem;
+  content: "";
+  background: rgba(245, 230, 66, 0.72);
+  box-shadow: 0 2px 8px rgba(26, 26, 26, 0.12);
+  transform: translateX(-50%) rotate(-4deg);
+}
