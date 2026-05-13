@@ -1,5 +1,6 @@
 import { mkdir, readFile, writeFile } from "fs/promises";
 import path from "path";
+import { createClient, type RedisClientType } from "redis";
 
 type AlbumClickCounts = Record<string, number>;
 export type ClickTargetType = "album" | "photo";
@@ -8,11 +9,36 @@ const STORAGE_DIR = path.join(process.cwd(), ".data");
 const STORAGE_FILE = path.join(STORAGE_DIR, "album-clicks.json");
 const KEY_PREFIX = "clicks:";
 
+let redisClientPromise: Promise<RedisClientType> | null = null;
+
+function redisUrl(): string | null {
+  return process.env.REDIS_URL ?? null;
+}
+
 function redisConfig(): { url: string; token: string } | null {
   const url = process.env.KV_REST_API_URL ?? process.env.UPSTASH_REDIS_REST_URL;
   const token = process.env.KV_REST_API_TOKEN ?? process.env.UPSTASH_REDIS_REST_TOKEN;
 
   return url && token ? { url, token } : null;
+}
+
+async function redisClient(): Promise<RedisClientType> {
+  const url = redisUrl();
+
+  if (!url) {
+    throw new Error("REDIS_URL não configurado.");
+  }
+
+  if (!redisClientPromise) {
+    const client = createClient({ url });
+    client.on("error", (error) => {
+      console.error("Redis client error", error);
+      redisClientPromise = null;
+    });
+    redisClientPromise = client.connect().then(() => client as RedisClientType);
+  }
+
+  return redisClientPromise;
 }
 
 function keyForTarget(targetType: ClickTargetType, targetId: string): string {
@@ -54,6 +80,14 @@ async function writeLocalCounts(counts: AlbumClickCounts): Promise<void> {
 }
 
 export async function getClickCounts(targetType: ClickTargetType, targetIds: string[]): Promise<AlbumClickCounts> {
+  if (redisUrl()) {
+    const client = await redisClient();
+    const keys = targetIds.map((targetId) => keyForTarget(targetType, targetId));
+    const values = await client.mGet(keys);
+
+    return Object.fromEntries(targetIds.map((targetId, index) => [targetId, Number(values[index] ?? 0)]));
+  }
+
   const config = redisConfig();
 
   if (config) {
@@ -73,6 +107,11 @@ export async function getClickCounts(targetType: ClickTargetType, targetIds: str
 }
 
 export async function incrementClick(targetType: ClickTargetType, targetId: string): Promise<number> {
+  if (redisUrl()) {
+    const client = await redisClient();
+    return client.incr(keyForTarget(targetType, targetId));
+  }
+
   const config = redisConfig();
 
   if (config) {

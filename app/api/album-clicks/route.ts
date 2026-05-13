@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getClickCounts, incrementClick, type ClickTargetType } from "@/lib/album-clicks";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 function sanitizeAlbumId(value: string | null): string | null {
   if (!value) {
