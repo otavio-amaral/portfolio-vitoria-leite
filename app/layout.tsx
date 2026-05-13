@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Bebas_Neue, Dancing_Script, Outfit } from "next/font/google";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
@@ -58,6 +60,8 @@ export default function RootLayout({ children }: RootLayoutProps): JSX.Element {
         <Navbar />
         <PageTransition>{children}</PageTransition>
         <Footer />
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
