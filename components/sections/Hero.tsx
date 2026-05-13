@@ -138,7 +138,7 @@ function HeroCtas({ whatsappUrl }: CtaProps): JSX.Element {
         ariaLabel="Chamar Vitória no WhatsApp"
       >
         <WhatsAppIcon />
-        WhatsApp
+        <span>WhatsApp</span>
       </MagneticButton>
       <MagneticButton
         href={SITE_CONFIG.instagramUrl}
@@ -148,7 +148,7 @@ function HeroCtas({ whatsappUrl }: CtaProps): JSX.Element {
         ariaLabel="Abrir Instagram da Vitória"
       >
         <InstagramIcon />
-        Instagram
+        <span>Instagram</span>
       </MagneticButton>
     </>
   );
@@ -176,7 +176,7 @@ function FloatingCtas({ whatsappUrl }: CtaProps): JSX.Element {
     <AnimatePresence>
       {isVisible ? (
         <motion.div
-          className="fixed inset-x-3 bottom-[5.6rem] z-40 grid grid-cols-2 gap-2 md:inset-x-auto md:right-5 md:grid-cols-none md:flex md:flex-col"
+          className="fixed bottom-[5.6rem] right-3 z-40 flex flex-col gap-2 md:right-5"
           initial={{ opacity: 0, y: 24, scale: 0.96 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 18, scale: 0.96 }}
@@ -187,22 +187,22 @@ function FloatingCtas({ whatsappUrl }: CtaProps): JSX.Element {
             target="_blank"
             rel="noreferrer"
             variant="whatsapp"
-            className="min-h-10 px-3 py-2 text-[0.58rem] tracking-[0.16em] shadow-[0_14px_30px_rgba(37,211,102,0.24)] md:px-4"
+            className="!h-12 !min-h-12 !w-12 !px-0 !py-0 text-[0] shadow-[0_14px_30px_rgba(37,211,102,0.24)] [&_.button-arrow]:hidden [&_svg]:h-5 [&_svg]:w-5 md:!h-auto md:!w-auto md:!min-h-10 md:!px-4 md:!py-2 md:text-[0.58rem] md:tracking-[0.16em] md:[&_.button-arrow]:inline-block md:[&_svg]:h-4 md:[&_svg]:w-4"
             ariaLabel="Chamar Vitória no WhatsApp"
           >
             <WhatsAppIcon />
-            WhatsApp
+            <span className="hidden md:inline">WhatsApp</span>
           </MagneticButton>
           <MagneticButton
             href={SITE_CONFIG.instagramUrl}
             target="_blank"
             rel="noreferrer"
             variant="solid"
-            className="min-h-10 px-3 py-2 text-[0.58rem] tracking-[0.16em] md:px-4"
+            className="!h-12 !min-h-12 !w-12 !px-0 !py-0 text-[0] [&_.button-arrow]:hidden [&_svg]:h-5 [&_svg]:w-5 md:!h-auto md:!w-auto md:!min-h-10 md:!px-4 md:!py-2 md:text-[0.58rem] md:tracking-[0.16em] md:[&_.button-arrow]:inline-block md:[&_svg]:h-4 md:[&_svg]:w-4"
             ariaLabel="Abrir Instagram da Vitória"
           >
             <InstagramIcon />
-            Instagram
+            <span className="hidden md:inline">Instagram</span>
           </MagneticButton>
         </motion.div>
       ) : null}

@@ -28,7 +28,7 @@ export function MagneticButton({
 }: MagneticButtonProps): JSX.Element {
   const { ref, position, handleMouseMove, handleMouseLeave } = useMagneticEffect();
   const classes = cn(
-    "group relative inline-flex min-h-11 items-center justify-center overflow-hidden border px-6 py-3 font-ui text-xs font-extrabold uppercase tracking-[0.24em] shadow-[0_10px_24px_rgba(26,26,26,0.08)] transition-[border-color,box-shadow,color,transform] duration-300 focus-visible:sr-focus",
+    "group relative inline-flex min-h-11 items-center justify-center overflow-hidden rounded-full border px-6 py-3 font-ui text-xs font-extrabold uppercase tracking-[0.24em] shadow-[0_10px_24px_rgba(26,26,26,0.08)] transition-[border-color,box-shadow,color,transform] duration-300 focus-visible:sr-focus",
     variant === "solid"
       ? "border-red bg-red text-white shadow-[0_16px_34px_rgba(232,20,43,0.28)] hover:border-red-dark hover:text-white hover:shadow-[0_20px_42px_rgba(232,20,43,0.34)]"
       : variant === "whatsapp"
@@ -48,7 +48,7 @@ export function MagneticButton({
       <span className="absolute inset-y-[-35%] left-[-35%] w-1/3 -skew-x-12 bg-white/35 opacity-0 blur-sm transition-all duration-700 group-hover:left-[115%] group-hover:opacity-100" />
       <span className="relative z-10 flex items-center gap-2">
         {children}
-        <span className="inline-block transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true">
+        <span className="button-arrow inline-block transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true">
           →
         </span>
       </span>
