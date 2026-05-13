@@ -8,6 +8,7 @@ out
 
 next-dev.log
 next-dev.err.log
+.data
 
 *.tsbuildinfo
 .DS_Store

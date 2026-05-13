@@ -2,16 +2,38 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { useEffect, useMemo, useState } from "react";
 import { SOCIAL_REELS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import type { SocialReelItem } from "@/types/portfolio";
 
 interface SocialReelsGridProps {
   limit?: number;
+  randomize?: boolean;
   variant?: "grid" | "horizontal";
 }
 
-export function SocialReelsGrid({ limit, variant = "grid" }: SocialReelsGridProps): JSX.Element {
-  const reels = typeof limit === "number" ? SOCIAL_REELS.slice(0, limit) : SOCIAL_REELS;
+function shuffleReels(reels: readonly SocialReelItem[]): SocialReelItem[] {
+  const shuffled = [...reels];
+
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[randomIndex]] = [shuffled[randomIndex], shuffled[index]];
+  }
+
+  return shuffled;
+}
+
+export function SocialReelsGrid({ limit, randomize = false, variant = "grid" }: SocialReelsGridProps): JSX.Element {
+  const baseReels = useMemo(
+    () => (typeof limit === "number" ? SOCIAL_REELS.slice(0, limit) : SOCIAL_REELS),
+    [limit]
+  );
+  const [reels, setReels] = useState<SocialReelItem[]>(() => [...baseReels]);
+
+  useEffect(() => {
+    setReels(randomize ? shuffleReels(baseReels) : [...baseReels]);
+  }, [baseReels, randomize]);
 
   return (
     <div

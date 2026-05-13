@@ -5,6 +5,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { GrainOverlay } from "@/components/ui/GrainOverlay";
 import { ScrollProgress } from "@/components/ui/ScrollProgress";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { SITE_CONFIG } from "@/lib/constants";
 import "./globals.css";
 
@@ -43,10 +44,17 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps): JSX.Element {
   return (
-    <html lang="pt-BR" className={`${display.variable} ${accent.variable} ${body.variable}`}>
+    <html lang="pt-BR" className={`${display.variable} ${accent.variable} ${body.variable}`} suppressHydrationWarning>
       <body>
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{var p=localStorage.getItem('vitoria-theme');var t=(p==='dark'||p==='light')?p:(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=t;}catch(e){}"
+          }}
+        />
         <ScrollProgress />
         <GrainOverlay />
+        <ThemeToggle />
         <Navbar />
         <PageTransition>{children}</PageTransition>
         <Footer />

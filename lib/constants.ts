@@ -8,7 +8,7 @@ export const SITE_CONFIG = {
     "Vitória cria imagens com cara de agora: conteúdo que nasce para feed, story, pin, reels e campanha, mas ainda carrega direção, intenção e personalidade. Ela mistura estratégia de social, olhar fotográfico e ritmo de vídeo para transformar marcas em presença visual.",
   quote: "Eu gosto quando uma imagem parece print de um momento real, mas foi pensada até o último detalhe.",
   email: "contato@vitorialeite.com",
-  whatsapp: "+55 (11) 90000-0000",
+  whatsapp: "+55 (11) 98336-6510",
   instagram: "@viemfoco",
   instagramUrl: "https://instagram.com/viemfoco",
   location: "São Paulo, Brasil",
@@ -46,7 +46,8 @@ export const SITE_CONFIG = {
     { src: "/images/vitoria-pb.jpeg", alt: "Retrato em preto e branco de Vitória Leite com câmera", rotation: -1, speed: -64 },
     { src: "https://drive.google.com/thumbnail?id=1&sz=w900", alt: "Vídeo vertical em produção", rotation: 5, speed: -34 },
     { src: "https://drive.google.com/thumbnail?id=1&sz=w900", alt: "Moodboard de direção de fotografia", rotation: -6, speed: -18 },
-    { src: "https://drive.google.com/thumbnail?id=1&sz=w900", alt: "Conteúdo para redes sociais", rotation: 2, speed: -52 }
+    { src: "https://drive.google.com/thumbnail?id=1&sz=w900", alt: "Conteúdo para redes sociais", rotation: 2, speed: -52 },
+    { src: "https://drive.google.com/thumbnail?id=1&sz=w900", alt: "Bastidor de produção criativa", rotation: -3, speed: -28 }
   ],
   portfolioViewModes: [
     { id: "grid", label: "Grid" },

@@ -104,6 +104,23 @@ async function fetchFolderMetadata(folderId: string): Promise<DriveMetadataRespo
   return (await response.json()) as DriveMetadataResponse;
 }
 
+async function fetchDriveFile(fileId: string): Promise<DriveFile> {
+  const params = new URLSearchParams({
+    fields: "id,name,description,mimeType,thumbnailLink,imageMediaMetadata",
+    key: getApiKey()
+  });
+
+  const response = await fetch(`${DRIVE_API_URL}/${fileId}?${params.toString()}`, {
+    next: { revalidate: 3600 }
+  });
+
+  if (!response.ok) {
+    throw new Error(`Google Drive API respondeu com status ${response.status}`);
+  }
+
+  return (await response.json()) as DriveFile;
+}
+
 async function getChildFolders(category: Category): Promise<DriveMetadataResponse[]> {
   const rootFolderId = getFolderId(category);
   const children = await fetchDriveFiles(rootFolderId, FOLDER_FIELDS);
@@ -129,6 +146,16 @@ export async function getDriveFiles(category: Category): Promise<MediaItem[]> {
 export async function getDriveFilesFromFolder(category: Category, folderId: string): Promise<MediaItem[]> {
   const files = await fetchDriveFiles(folderId, MEDIA_FIELDS);
   return files.filter(isSupportedMedia).map((file) => mapDriveFile(file, category));
+}
+
+export async function getDriveMediaById(fileId: string): Promise<MediaItem> {
+  const file = await fetchDriveFile(fileId);
+
+  if (!isSupportedMedia(file)) {
+    throw new Error("Arquivo não é uma mídia suportada.");
+  }
+
+  return mapDriveFile(file, "todos");
 }
 
 export async function getDriveFolders(category: Category): Promise<PortfolioFolder[]> {

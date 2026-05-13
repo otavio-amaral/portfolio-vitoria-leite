@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 :root {
+  color-scheme: light;
   --color-bg: #faf9f7;
   --color-surface: #ffffff;
   --color-border: #e8ded7;
@@ -14,6 +15,85 @@
   --color-rose: #f0c4b0;
   --color-highlight: #f5e642;
   --color-sage: #b8c5a3;
+  --grid-line: rgba(26, 26, 26, 0.025);
+  --bg-wash-primary: rgba(245, 230, 66, 0.34);
+  --bg-wash-secondary: rgba(240, 196, 176, 0.42);
+  --sticker-paper: #ffffff;
+  --sticker-ink: #1a1a1a;
+  --sticker-muted: #746b64;
+  --sticker-shadow: rgba(26, 26, 26, 0.14);
+  --flash-color: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --color-bg: #11100f;
+    --color-surface: #1b1816;
+    --color-border: #342c28;
+    --color-text: #f7f1eb;
+    --color-muted: #b9aaa0;
+    --color-red: #ff2742;
+    --color-red-dark: #c9142d;
+    --color-red-glow: rgba(255, 39, 66, 0.3);
+    --color-rose: #6d3f39;
+    --color-highlight: #f1d94d;
+    --color-sage: #879474;
+    --grid-line: rgba(255, 245, 235, 0.045);
+    --bg-wash-primary: rgba(232, 20, 43, 0.16);
+    --bg-wash-secondary: rgba(245, 230, 66, 0.12);
+    --sticker-paper: #f8f2ec;
+    --sticker-ink: #1a1a1a;
+    --sticker-muted: #746b64;
+    --sticker-shadow: rgba(0, 0, 0, 0.42);
+    --flash-color: #f7f1eb;
+  }
+}
+
+html[data-theme="light"] {
+  color-scheme: light;
+  --color-bg: #faf9f7;
+  --color-surface: #ffffff;
+  --color-border: #e8ded7;
+  --color-text: #1a1a1a;
+  --color-muted: #746b64;
+  --color-red: #e8142b;
+  --color-red-dark: #b80e22;
+  --color-red-glow: rgba(232, 20, 43, 0.24);
+  --color-rose: #f0c4b0;
+  --color-highlight: #f5e642;
+  --color-sage: #b8c5a3;
+  --grid-line: rgba(26, 26, 26, 0.025);
+  --bg-wash-primary: rgba(245, 230, 66, 0.34);
+  --bg-wash-secondary: rgba(240, 196, 176, 0.42);
+  --sticker-paper: #ffffff;
+  --sticker-ink: #1a1a1a;
+  --sticker-muted: #746b64;
+  --sticker-shadow: rgba(26, 26, 26, 0.14);
+  --flash-color: #ffffff;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg: #11100f;
+  --color-surface: #1b1816;
+  --color-border: #342c28;
+  --color-text: #f7f1eb;
+  --color-muted: #b9aaa0;
+  --color-red: #ff2742;
+  --color-red-dark: #c9142d;
+  --color-red-glow: rgba(255, 39, 66, 0.3);
+  --color-rose: #6d3f39;
+  --color-highlight: #f1d94d;
+  --color-sage: #879474;
+  --grid-line: rgba(255, 245, 235, 0.045);
+  --bg-wash-primary: rgba(232, 20, 43, 0.16);
+  --bg-wash-secondary: rgba(245, 230, 66, 0.12);
+  --sticker-paper: #f8f2ec;
+  --sticker-ink: #1a1a1a;
+  --sticker-muted: #746b64;
+  --sticker-shadow: rgba(0, 0, 0, 0.42);
+  --flash-color: #f7f1eb;
 }
 
 * {
@@ -32,11 +112,11 @@ body {
   margin: 0;
   color: var(--color-text);
   background:
-    linear-gradient(rgba(26, 26, 26, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(26, 26, 26, 0.025) 1px, transparent 1px),
-    radial-gradient(circle at 12% 14%, rgba(245, 230, 66, 0.34), transparent 19rem),
-    radial-gradient(circle at 90% 10%, rgba(240, 196, 176, 0.42), transparent 22rem),
-    #faf9f7;
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
+    radial-gradient(circle at 12% 14%, var(--bg-wash-primary), transparent 19rem),
+    radial-gradient(circle at 90% 10%, var(--bg-wash-secondary), transparent 22rem),
+    var(--color-bg);
   background-size: 26px 26px, 26px 26px, auto, auto, auto;
   font-family: var(--font-body);
 }
@@ -98,9 +178,30 @@ button {
 }
 
 .sticker {
-  border: 8px solid #fff;
-  background: #fff;
-  box-shadow: 0 16px 34px rgba(26, 26, 26, 0.14);
+  border: 8px solid var(--sticker-paper);
+  color: var(--sticker-ink);
+  background: var(--sticker-paper);
+  box-shadow: 0 16px 34px var(--sticker-shadow);
+}
+
+.paper-surface {
+  color: var(--sticker-ink);
+  background: var(--sticker-paper);
+}
+
+.paper-surface .text-text,
+.sticker .text-text {
+  color: var(--sticker-ink);
+}
+
+.paper-surface .text-muted,
+.sticker .text-muted {
+  color: var(--sticker-muted);
+}
+
+.paper-surface .bg-surface,
+.sticker .bg-surface {
+  background: var(--sticker-paper);
 }
 
 .paper-tape {
@@ -118,4 +219,15 @@ button {
   background: rgba(245, 230, 66, 0.72);
   box-shadow: 0 2px 8px rgba(26, 26, 26, 0.12);
   transform: translateX(-50%) rotate(-4deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }

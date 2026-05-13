@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SkeletonCard } from "@/components/ui/SkeletonCard";
 import { SITE_CONFIG } from "@/lib/constants";
 import { cn } from "@/lib/utils";
@@ -15,9 +15,101 @@ interface FolderGridProps {
   onOpenFolder: (folder: PortfolioFolder) => void;
 }
 
+interface FolderCoverProps {
+  folder: PortfolioFolder;
+}
+
+function FolderCover({ folder }: FolderCoverProps): JSX.Element {
+  const [imageFailed, setImageFailed] = useState(false);
+
+  if (!folder.coverUrl || imageFailed) {
+    return (
+      <div className="absolute inset-0 grid place-items-center bg-gradient-to-br from-surface via-border to-rose p-6 text-center font-ui text-xs font-extrabold uppercase tracking-[0.18em] text-muted">
+        capa indisponível
+      </div>
+    );
+  }
+
+  return (
+    <Image
+      src={folder.coverUrl}
+      alt={folder.name}
+      fill
+      sizes="(max-width: 768px) 100vw, (max-width: 1120px) 50vw, 33vw"
+      className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+      onError={() => setImageFailed(true)}
+    />
+  );
+}
+
+function formatClickCount(count: number): string {
+  return `${count.toLocaleString("pt-BR")} ${count === 1 ? "clique" : "cliques"}`;
+}
+
 export function FolderGrid({ folders, isLoading, error, onOpenFolder }: FolderGridProps): JSX.Element {
   const [showAll, setShowAll] = useState(false);
+  const [albumClicks, setAlbumClicks] = useState<Record<string, number>>({});
   const visibleFolders = useMemo(() => (showAll ? folders : folders.slice(0, 3)), [folders, showAll]);
+
+  useEffect(() => {
+    if (!folders.length) {
+      setAlbumClicks({});
+      return;
+    }
+
+    const controller = new AbortController();
+    const ids = folders.map((folder) => folder.id).join(",");
+
+    async function loadClickCounts(): Promise<void> {
+      try {
+        const response = await fetch(`/api/album-clicks?ids=${encodeURIComponent(ids)}`, {
+          cache: "no-store",
+          signal: controller.signal
+        });
+
+        if (!response.ok) {
+          return;
+        }
+
+        const data = (await response.json()) as { counts?: Record<string, number> };
+        setAlbumClicks(data.counts ?? {});
+      } catch {
+        if (!controller.signal.aborted) {
+          setAlbumClicks({});
+        }
+      }
+    }
+
+    void loadClickCounts();
+
+    return () => controller.abort();
+  }, [folders]);
+
+  function handleOpenFolder(folder: PortfolioFolder): void {
+    const optimisticCount = (albumClicks[folder.id] ?? 0) + 1;
+
+    setAlbumClicks((current) => ({ ...current, [folder.id]: optimisticCount }));
+    void fetch("/api/album-clicks", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ albumId: folder.id })
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          return;
+        }
+
+        const data = (await response.json()) as { count?: number };
+
+        if (typeof data.count === "number") {
+          setAlbumClicks((current) => ({ ...current, [folder.id]: data.count ?? optimisticCount }));
+        }
+      })
+      .catch(() => undefined);
+    onOpenFolder(folder);
+  }
 
   if (isLoading) {
     return (
@@ -68,21 +160,14 @@ export function FolderGrid({ folders, isLoading, error, onOpenFolder }: FolderGr
               "paper-tape sticker group relative overflow-hidden rounded-sm bg-surface text-left focus-visible:sr-focus",
               folder.coverUrl ? "min-h-[24rem]" : "min-h-[18rem]"
             )}
-            onClick={() => onOpenFolder(folder)}
+            onClick={() => handleOpenFolder(folder)}
             data-cursor="photo"
           >
-            {folder.coverUrl ? (
-              <Image
-                src={folder.coverUrl}
-                alt={folder.name}
-                fill
-                sizes="(max-width: 768px) 100vw, (max-width: 1120px) 50vw, 33vw"
-                className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-              />
-            ) : (
-              <div className="absolute inset-0 bg-rose" />
-            )}
+            <FolderCover folder={folder} />
             <div className="absolute inset-0 bg-gradient-to-t from-text/78 via-text/16 to-transparent" />
+            <div className="absolute right-4 top-4 rounded-full bg-text/82 px-3 py-1 font-ui text-[0.68rem] font-extrabold uppercase tracking-[0.08em] text-white backdrop-blur">
+              {formatClickCount(albumClicks[folder.id] ?? 0)}
+            </div>
             <div className="absolute inset-x-0 bottom-0 p-5">
               <span className="w-fit rotate-[-3deg] bg-highlight px-3 py-1 font-ui text-xs font-extrabold uppercase text-text">
                 {folder.itemCount} fotos

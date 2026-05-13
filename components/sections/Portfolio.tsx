@@ -21,6 +21,7 @@ export function Portfolio(): JSX.Element {
   const [viewMode, setViewMode] = useState<PortfolioViewMode>("grid");
   const [flashKey, setFlashKey] = useState(0);
   const [activeFolder, setActiveFolder] = useState<PortfolioFolder | null>(null);
+  const [sharedPhoto, setSharedPhoto] = useState<MediaItem | null>(null);
   const shouldShowSocialReels = activeCategory === "social_media";
   const shouldShowFolders = activeCategory === "todos" && !activeFolder;
   const { folders, isLoading: isLoadingFolders, error: foldersError } = useDriveFolders("todos");
@@ -37,9 +38,78 @@ export function Portfolio(): JSX.Element {
     setActiveFolder(null);
   }, [activeCategory]);
 
+  useEffect(() => {
+    const photoId = new URLSearchParams(window.location.search).get("foto");
+
+    if (!photoId) {
+      return;
+    }
+
+    let isMounted = true;
+    const sharedPhotoId = photoId;
+
+    async function loadSharedPhoto(): Promise<void> {
+      try {
+        const response = await fetch(`/api/drive/media?id=${encodeURIComponent(sharedPhotoId)}`, {
+          cache: "no-store"
+        });
+
+        if (!response.ok) {
+          return;
+        }
+
+        const item = (await response.json()) as MediaItem;
+
+        if (isMounted && item.mediaType === "image") {
+          setSharedPhoto(item);
+          void fetch("/api/album-clicks", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ type: "photo", targetId: item.id })
+          }).catch(() => undefined);
+        }
+      } catch {
+        if (isMounted) {
+          setSharedPhoto(null);
+        }
+      }
+    }
+
+    void loadSharedPhoto();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    const activePhoto = sharedPhoto ?? lightbox.activeItem;
+
+    if (!activePhoto || typeof window === "undefined") {
+      return;
+    }
+
+    const url = new URL(window.location.href);
+    url.searchParams.set("foto", activePhoto.id);
+    url.hash = "portfolio";
+    window.history.replaceState(null, "", url.toString());
+  }, [lightbox.activeItem, sharedPhoto]);
+
   function openImage(item: MediaItem): void {
     setFlashKey((current) => current + 1);
+    setSharedPhoto(null);
     window.setTimeout(() => lightbox.open(item), 120);
+  }
+
+  function closeLightbox(): void {
+    setSharedPhoto(null);
+    lightbox.close();
+
+    const url = new URL(window.location.href);
+    url.searchParams.delete("foto");
+    window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash || "#portfolio"}`);
   }
 
   function handleCategoryChange(category: Category): void {
@@ -52,7 +122,7 @@ export function Portfolio(): JSX.Element {
         {flashKey > 0 ? (
           <motion.div
             key={flashKey}
-            className="pointer-events-none fixed inset-0 z-[95] bg-white"
+            className="pointer-events-none fixed inset-0 z-[95] bg-[var(--flash-color)]"
             initial={{ opacity: 0 }}
             animate={{ opacity: [0, 1, 0] }}
             exit={{ opacity: 0 }}
@@ -139,7 +209,12 @@ export function Portfolio(): JSX.Element {
           </motion.div>
         </AnimatePresence>
       </div>
-      <Lightbox item={lightbox.activeItem} onClose={lightbox.close} onNext={lightbox.next} onPrevious={lightbox.previous} />
+      <Lightbox
+        item={sharedPhoto ?? lightbox.activeItem}
+        onClose={closeLightbox}
+        onNext={sharedPhoto ? () => undefined : lightbox.next}
+        onPrevious={sharedPhoto ? () => undefined : lightbox.previous}
+      />
       <VideoModal item={activeVideo} onClose={() => setActiveVideo(null)} />
     </section>
   );

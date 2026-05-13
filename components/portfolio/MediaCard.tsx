@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { useEffect } from "react";
+import { motion } from "framer-motion";
+import { useState } from "react";
 import { CATEGORIES, SITE_CONFIG } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import type { MediaItem, PortfolioViewMode } from "@/types/portfolio";
@@ -13,6 +13,7 @@ interface MediaCardProps {
   onOpenVideo: (item: MediaItem) => void;
   viewMode?: PortfolioViewMode;
   projectTitle?: string;
+  clickCount?: number;
 }
 
 const BLUR_PLACEHOLDER =
@@ -26,31 +27,21 @@ function hashtag(item: MediaItem): string {
   return `#${categoryLabel(item).toLowerCase().replace(/\s+/g, "")}`;
 }
 
-function metricFromId(id: string, base: number, spread: number): number {
-  const seed = Array.from(id).reduce((sum, char) => sum + char.charCodeAt(0), 0);
-  return base + (seed % spread);
+function formatClickCount(count: number): string {
+  return `${count.toLocaleString("pt-BR")} ${count === 1 ? "clique" : "cliques"}`;
 }
 
-interface AnimatedMetricProps {
-  value: number;
-}
-
-function AnimatedMetric({ value }: AnimatedMetricProps): JSX.Element {
-  const motionValue = useMotionValue(0);
-  const spring = useSpring(motionValue, { stiffness: 70, damping: 16 });
-  const rounded = useTransform(spring, (latest) => Math.round(latest).toLocaleString("pt-BR"));
-
-  useEffect(() => {
-    motionValue.set(value);
-  }, [motionValue, value]);
-
-  return <motion.span>{rounded}</motion.span>;
-}
-
-export function MediaCard({ item, onOpenImage, onOpenVideo, viewMode = "grid", projectTitle }: MediaCardProps): JSX.Element {
+export function MediaCard({
+  item,
+  onOpenImage,
+  onOpenVideo,
+  viewMode = "grid",
+  projectTitle,
+  clickCount = 0
+}: MediaCardProps): JSX.Element {
+  const [imageFailed, setImageFailed] = useState(false);
   const isVideo = item.mediaType === "video";
   const aspectRatio = viewMode === "feed" ? 4 / 5 : item.aspectRatio ?? (isVideo ? 16 / 10 : 4 / 5);
-  const views = metricFromId(`${item.id}-views`, 1900, 44000);
   const displayTitle = projectTitle ?? item.description ?? categoryLabel(item);
 
   return (
@@ -83,18 +74,27 @@ export function MediaCard({ item, onOpenImage, onOpenVideo, viewMode = "grid", p
         onClick={() => (isVideo ? onOpenVideo(item) : onOpenImage(item))}
         data-cursor={isVideo ? "play" : "photo"}
       >
-        <Image
-          src={item.thumbnailUrl}
-          alt={item.name}
-          fill
-          sizes={viewMode === "feed" ? "400px" : "(max-width: 768px) 100vw, (max-width: 1120px) 50vw, 33vw"}
-          className="object-cover transition-transform duration-500 group-hover:scale-[1.035]"
-          placeholder="blur"
-          blurDataURL={BLUR_PLACEHOLDER}
-        />
-        <span className="absolute right-3 top-3 translate-y-2 rounded-full bg-text/78 px-3 py-1 font-ui text-[0.68rem] font-bold text-white opacity-0 backdrop-blur transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-          IG <AnimatedMetric value={views} /> views
-        </span>
+        {imageFailed ? (
+          <span className="absolute inset-0 grid place-items-center bg-gradient-to-br from-surface via-border to-rose p-6 text-center font-ui text-xs font-extrabold uppercase tracking-[0.18em] text-muted">
+            mídia indisponível
+          </span>
+        ) : (
+          <Image
+            src={item.thumbnailUrl}
+            alt={item.name}
+            fill
+            sizes={viewMode === "feed" ? "400px" : "(max-width: 768px) 100vw, (max-width: 1120px) 50vw, 33vw"}
+            className="object-cover transition-transform duration-500 group-hover:scale-[1.035]"
+            placeholder="blur"
+            blurDataURL={BLUR_PLACEHOLDER}
+            onError={() => setImageFailed(true)}
+          />
+        )}
+        {!isVideo ? (
+          <span className="absolute right-3 top-3 rounded-full bg-text/82 px-3 py-1 font-ui text-[0.68rem] font-extrabold uppercase tracking-[0.08em] text-white backdrop-blur">
+            {formatClickCount(clickCount)}
+          </span>
+        ) : null}
         {isVideo ? (
           <span className="absolute left-1/2 top-1/2 grid h-16 w-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-red text-white shadow-red transition-transform duration-300 group-hover:scale-110">
             <span className="ml-1 h-0 w-0 border-y-[9px] border-l-[14px] border-y-transparent border-l-white" />

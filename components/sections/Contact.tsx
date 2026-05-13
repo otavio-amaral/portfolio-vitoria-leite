@@ -27,7 +27,7 @@ export function Contact(): JSX.Element {
             ))}
           </div>
         </div>
-        <div className="paper-tape sticker rotate-[1.5deg] bg-surface p-8 md:p-10">
+        <div className="paper-tape sticker paper-surface rotate-[1.5deg] p-8 md:p-10">
           <p className="font-ui text-xs font-black uppercase tracking-[0.22em] text-red">atalho para orçamento</p>
           <h3 className="mt-5 font-display text-6xl uppercase leading-none text-text md:text-8xl">
             chama no <span className="font-accent text-5xl normal-case text-red md:text-7xl">Instagram</span>
@@ -36,7 +36,13 @@ export function Contact(): JSX.Element {
             Envie uma DM para {SITE_CONFIG.instagram} dizendo “vim pelo site” e conte rapidinho qual é o projeto.
           </p>
           <div className="mt-10">
-            <MagneticButton href={instagramDmUrl} ariaLabel="Abrir DM da Vitória no Instagram">
+            <MagneticButton
+              href={instagramDmUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="bg-transparent text-[var(--sticker-ink)]"
+              ariaLabel="Abrir DM da Vitória no Instagram"
+            >
               Mandar DM no Instagram
             </MagneticButton>
           </div>
