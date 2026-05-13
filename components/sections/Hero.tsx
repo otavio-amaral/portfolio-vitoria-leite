@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { useRandomHeroMedia } from "@/hooks/useRandomHeroMedia";
@@ -123,6 +123,93 @@ function WhatsAppIcon(): JSX.Element {
   );
 }
 
+interface CtaProps {
+  whatsappUrl: string;
+}
+
+function HeroCtas({ whatsappUrl }: CtaProps): JSX.Element {
+  return (
+    <>
+      <MagneticButton
+        href={whatsappUrl}
+        target="_blank"
+        rel="noreferrer"
+        variant="whatsapp"
+        ariaLabel="Chamar Vitória no WhatsApp"
+      >
+        <WhatsAppIcon />
+        WhatsApp
+      </MagneticButton>
+      <MagneticButton
+        href={SITE_CONFIG.instagramUrl}
+        target="_blank"
+        rel="noreferrer"
+        variant="solid"
+        ariaLabel="Abrir Instagram da Vitória"
+      >
+        <InstagramIcon />
+        Instagram
+      </MagneticButton>
+    </>
+  );
+}
+
+function FloatingCtas({ whatsappUrl }: CtaProps): JSX.Element {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    function updateVisibility(): void {
+      setIsVisible(window.scrollY > window.innerHeight * 0.7);
+    }
+
+    updateVisibility();
+    window.addEventListener("scroll", updateVisibility, { passive: true });
+    window.addEventListener("resize", updateVisibility);
+
+    return () => {
+      window.removeEventListener("scroll", updateVisibility);
+      window.removeEventListener("resize", updateVisibility);
+    };
+  }, []);
+
+  return (
+    <AnimatePresence>
+      {isVisible ? (
+        <motion.div
+          className="fixed inset-x-3 bottom-[5.6rem] z-40 grid grid-cols-2 gap-2 md:inset-x-auto md:right-5 md:grid-cols-none md:flex md:flex-col"
+          initial={{ opacity: 0, y: 24, scale: 0.96 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 18, scale: 0.96 }}
+          transition={{ type: "spring", stiffness: 260, damping: 24 }}
+        >
+          <MagneticButton
+            href={whatsappUrl}
+            target="_blank"
+            rel="noreferrer"
+            variant="whatsapp"
+            className="min-h-10 px-3 py-2 text-[0.58rem] tracking-[0.16em] shadow-[0_14px_30px_rgba(37,211,102,0.24)] md:px-4"
+            ariaLabel="Chamar Vitória no WhatsApp"
+          >
+            <WhatsAppIcon />
+            WhatsApp
+          </MagneticButton>
+          <MagneticButton
+            href={SITE_CONFIG.instagramUrl}
+            target="_blank"
+            rel="noreferrer"
+            variant="solid"
+            className="min-h-10 px-3 py-2 text-[0.58rem] tracking-[0.16em] md:px-4"
+            ariaLabel="Abrir Instagram da Vitória"
+          >
+            <InstagramIcon />
+            Instagram
+          </MagneticButton>
+        </motion.div>
+      ) : null}
+    </AnimatePresence>
+  );
+}
+
 export function Hero(): JSX.Element {
   const randomPhotoCount = Math.max(SITE_CONFIG.heroCollage.length - SITE_CONFIG.localPortraits.length, 0);
   const { items } = useRandomHeroMedia(randomPhotoCount);
@@ -167,26 +254,7 @@ export function Hero(): JSX.Element {
             {SITE_CONFIG.tagline}
           </p>
           <div className="mt-8 grid gap-3 sm:grid-cols-2 md:flex md:flex-wrap md:items-center">
-            <MagneticButton
-              href={whatsappUrl}
-              target="_blank"
-              rel="noreferrer"
-              variant="whatsapp"
-              ariaLabel="Chamar Vitória no WhatsApp"
-            >
-              <WhatsAppIcon />
-              WhatsApp
-            </MagneticButton>
-            <MagneticButton
-              href={SITE_CONFIG.instagramUrl}
-              target="_blank"
-              rel="noreferrer"
-              variant="solid"
-              ariaLabel="Abrir Instagram da Vitória"
-            >
-              <InstagramIcon />
-              Instagram
-            </MagneticButton>
+            <HeroCtas whatsappUrl={whatsappUrl} />
             <MagneticButton href="#portfolio">Abrir feed</MagneticButton>
           </div>
         </div>
@@ -204,6 +272,7 @@ export function Hero(): JSX.Element {
           ))}
         </div>
       </div>
+      <FloatingCtas whatsappUrl={whatsappUrl} />
     </section>
   );
 }
