@@ -15,6 +15,7 @@ interface CollagePhotoProps {
   rotation: number;
   speed: number;
   index: number;
+  hideUntilLoaded?: boolean;
 }
 
 const COLLAGE_LAYOUTS = [
@@ -65,9 +66,10 @@ function randomizeCollageLayout(length: number): string[] {
   return order.map((layoutIndex) => layout[layoutIndex]);
 }
 
-function CollagePhoto({ src, alt, className, rotation, speed, index }: CollagePhotoProps): JSX.Element {
+function CollagePhoto({ src, alt, className, rotation, speed, index, hideUntilLoaded = false }: CollagePhotoProps): JSX.Element {
   const ref = useRef<HTMLDivElement>(null);
   const [imageFailed, setImageFailed] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(!hideUntilLoaded);
   const shouldReduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const y = useTransform(
@@ -82,7 +84,7 @@ function CollagePhoto({ src, alt, className, rotation, speed, index }: CollagePh
       className={`paper-tape sticker relative min-h-[6.75rem] overflow-hidden rounded-sm will-change-transform md:min-h-[9rem] ${className}`}
       style={{ y, rotate: rotation }}
       initial={{ opacity: 0, y: shouldReduceMotion ? 0 : -34, scale: 0.96, rotate: rotation - 4 }}
-      animate={{ opacity: 1, y: 0, scale: 1, rotate: rotation }}
+      animate={{ opacity: imageLoaded ? 1 : 0, y: 0, scale: 1, rotate: rotation }}
       transition={{ type: "spring", stiffness: 95, damping: 18, mass: 0.85, delay: index * 0.045 }}
       data-cursor="photo"
     >
@@ -99,6 +101,7 @@ function CollagePhoto({ src, alt, className, rotation, speed, index }: CollagePh
           className="object-cover saturate-[1.08]"
           priority={index < 3}
           onError={() => setImageFailed(true)}
+          onLoad={() => setImageLoaded(true)}
         />
       )}
     </motion.div>
@@ -219,20 +222,34 @@ export function Hero(): JSX.Element {
     "Oi, Vitória! Vim pelo site e queria conversar sobre um projeto. Gostei muito do seu olhar criativo e quero entender como podemos transformar minha ideia em conteúdo.";
   const whatsappUrl = `${formatWhatsAppLink(SITE_CONFIG.whatsapp)}?text=${encodeURIComponent(whatsappMessage)}`;
   const collage = useMemo(
-    () =>
-      SITE_CONFIG.heroCollage.map((photo, index) => {
-        const localPortrait = SITE_CONFIG.localPortraits[index];
-        const media = index >= SITE_CONFIG.localPortraits.length ? items[index - SITE_CONFIG.localPortraits.length] : undefined;
+    () => [
+      ...SITE_CONFIG.localPortraits.map((portrait, index) => {
+        const photo = SITE_CONFIG.heroCollage[index];
 
         return {
-          ...photo,
-          src: localPortrait?.src ?? media?.thumbnailUrl ?? photo.src,
-          alt: localPortrait?.alt ?? media?.name ?? photo.alt,
+          src: portrait.src,
+          alt: portrait.alt,
           className: layoutClasses[index] ?? COLLAGE_LAYOUTS[0][index],
-          rotation: photo.rotation + (index >= SITE_CONFIG.localPortraits.length ? ((index % 3) - 1) : 0)
+          rotation: photo.rotation,
+          speed: photo.speed,
+          hideUntilLoaded: false
         };
       }),
-    [items, layoutClasses]
+      ...items.slice(0, randomPhotoCount).map((media, mediaIndex) => {
+        const index = SITE_CONFIG.localPortraits.length + mediaIndex;
+        const photo = SITE_CONFIG.heroCollage[index];
+
+        return {
+          src: media.thumbnailUrl,
+          alt: media.name,
+          className: layoutClasses[index] ?? COLLAGE_LAYOUTS[0][index],
+          rotation: photo.rotation + ((index % 3) - 1),
+          speed: photo.speed,
+          hideUntilLoaded: true
+        };
+      })
+    ],
+    [items, layoutClasses, randomPhotoCount]
   );
 
   useEffect(() => {
@@ -268,6 +285,7 @@ export function Hero(): JSX.Element {
               rotation={photo.rotation}
               speed={photo.speed}
               index={index}
+              hideUntilLoaded={photo.hideUntilLoaded}
             />
           ))}
         </div>

@@ -5,8 +5,8 @@ export const SITE_CONFIG = {
   fullName: "Vitória Leite",
   tagline: "Social Media · Fotografia · Video Maker · Direção de Fotografia",
   about:
-    "Vitória cria imagens com cara de agora: conteúdo que nasce para feed, story, pin, reels e campanha, mas ainda carrega direção, intenção e personalidade. Ela mistura estratégia de social, olhar fotográfico e ritmo de vídeo para transformar marcas em presença visual.",
-  quote: "Eu gosto quando uma imagem parece print de um momento real, mas foi pensada até o último detalhe.",
+    "Sou fotógrafa e videomaker, com foco em detalhes e imagens documentais. Meu trabalho nasce do desejo de registrar momentos espontâneos, únicos e cheios de intenção — cenas simples, naturais e verdadeiras, que muitas vezes passam despercebidas.",
+  quote: "Gosto de captar momentos únicos e diferentes, com verdade, leveza e sensibilidade.",
   email: "contato@vitorialeite.com",
   whatsapp: "+55 (11) 98336-6510",
   instagram: "@viemfoco",
