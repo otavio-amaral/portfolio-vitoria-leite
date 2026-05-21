@@ -117,7 +117,7 @@ export function Portfolio(): JSX.Element {
   }
 
   return (
-    <section className="relative overflow-hidden bg-bg py-24 md:py-32" id="portfolio">
+    <section className="relative overflow-hidden bg-bg pb-24 pt-14 md:pb-32 md:pt-16" id="portfolio">
       <AnimatePresence>
         {flashKey > 0 ? (
           <motion.div

@@ -33,7 +33,7 @@ export function About(): JSX.Element {
   const { folders, isLoading: isLoadingFolders, error: foldersError } = useDriveFolders("todos");
 
   return (
-    <section className="bg-bg py-24 md:py-32" id="sobre">
+    <section className="bg-bg pb-14 pt-24 md:pb-16 md:pt-32" id="sobre">
       <div className="section-shell grid gap-14 lg:grid-cols-[1.25fr_0.75fr]">
         <motion.div initial={{ opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }}>
           <p className="font-ui text-xs font-black uppercase tracking-[0.22em] text-red">Sobre</p>
