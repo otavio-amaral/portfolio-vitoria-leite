@@ -162,14 +162,23 @@ export function Portfolio(): JSX.Element {
         </div>
         <CategoryTabs activeCategory={activeCategory} onChange={handleCategoryChange} />
         {activeFolder ? (
-          <div className="mt-7 flex flex-wrap items-center justify-between gap-4 border-b border-border pb-5">
+          <div className="mt-7 grid gap-5 border-b border-border bg-surface/70 p-5 shadow-[0_14px_34px_rgba(26,26,26,0.06)] md:grid-cols-[1fr_auto] md:items-end">
             <div>
               <p className="font-ui text-xs font-extrabold uppercase tracking-[0.16em] text-red">ensaio aberto</p>
-              <h3 className="font-display text-5xl uppercase leading-none text-text">{activeFolder.name}</h3>
+              <h3 className="mt-2 font-display text-6xl uppercase leading-none text-text md:text-8xl">{activeFolder.name}</h3>
+              <p className="mt-4 max-w-2xl font-ui text-base font-semibold leading-relaxed text-muted">
+                {activeFolder.description ??
+                  "Uma seleção com clima documental, detalhes espontâneos e imagens pensadas para contar a história desse ensaio."}
+              </p>
+              <div className="mt-5 flex flex-wrap gap-2 font-ui text-[0.68rem] font-extrabold uppercase tracking-[0.14em] text-muted">
+                <span className="bg-highlight px-3 py-1 text-text">{activeFolder.itemCount} fotos</span>
+                <span className="border border-border bg-bg px-3 py-1">galeria editorial</span>
+                <span className="border border-border bg-bg px-3 py-1">clique na foto para ampliar</span>
+              </div>
             </div>
             <button
               type="button"
-              className="rounded-full border border-border bg-surface px-5 py-3 font-ui text-xs font-extrabold uppercase tracking-[0.12em] text-text shadow-[0_10px_24px_rgba(26,26,26,0.08)] focus-visible:sr-focus"
+              className="w-fit rounded-full border border-border bg-bg px-5 py-3 font-ui text-xs font-extrabold uppercase tracking-[0.12em] text-text shadow-[0_10px_24px_rgba(26,26,26,0.08)] transition-colors hover:border-red focus-visible:sr-focus"
               onClick={() => setActiveFolder(null)}
               data-cursor="link"
             >

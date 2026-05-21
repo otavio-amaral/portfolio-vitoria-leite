@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CATEGORIES, SITE_CONFIG } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import type { MediaItem, PortfolioViewMode } from "@/types/portfolio";
@@ -40,9 +40,15 @@ export function MediaCard({
   clickCount = 0
 }: MediaCardProps): JSX.Element {
   const [imageFailed, setImageFailed] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
   const isVideo = item.mediaType === "video";
   const aspectRatio = viewMode === "feed" ? 4 / 5 : item.aspectRatio ?? (isVideo ? 16 / 10 : 4 / 5);
   const displayTitle = projectTitle ?? item.description ?? categoryLabel(item);
+
+  useEffect(() => {
+    setImageFailed(false);
+    setImageLoaded(false);
+  }, [item.thumbnailUrl]);
 
   return (
     <motion.article
@@ -74,6 +80,11 @@ export function MediaCard({
         onClick={() => (isVideo ? onOpenVideo(item) : onOpenImage(item))}
         data-cursor={isVideo ? "play" : "photo"}
       >
+        {!imageLoaded && !imageFailed ? (
+          <span className="absolute inset-0 bg-gradient-to-br from-surface via-[#efe2d6] to-highlight/45">
+            <span className="absolute inset-x-0 top-0 h-1 bg-red/70" />
+          </span>
+        ) : null}
         {imageFailed ? (
           <span className="absolute inset-0 grid place-items-center bg-gradient-to-br from-surface via-border to-rose p-6 text-center font-ui text-xs font-extrabold uppercase tracking-[0.18em] text-muted">
             mídia indisponível
@@ -84,10 +95,14 @@ export function MediaCard({
             alt={item.name}
             fill
             sizes={viewMode === "feed" ? "400px" : "(max-width: 768px) 100vw, (max-width: 1120px) 50vw, 33vw"}
-            className="object-cover transition-transform duration-500 group-hover:scale-[1.035]"
+            className={cn(
+              "object-cover transition-[opacity,transform] duration-500 group-hover:scale-[1.035]",
+              imageLoaded ? "opacity-100" : "opacity-0"
+            )}
             placeholder="blur"
             blurDataURL={BLUR_PLACEHOLDER}
             onError={() => setImageFailed(true)}
+            onLoad={() => setImageLoaded(true)}
           />
         )}
         {!isVideo ? (

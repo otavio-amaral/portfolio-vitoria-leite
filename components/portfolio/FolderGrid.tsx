@@ -21,6 +21,12 @@ interface FolderCoverProps {
 
 function FolderCover({ folder }: FolderCoverProps): JSX.Element {
   const [imageFailed, setImageFailed] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+
+  useEffect(() => {
+    setImageFailed(false);
+    setImageLoaded(false);
+  }, [folder.coverUrl]);
 
   if (!folder.coverUrl || imageFailed) {
     return (
@@ -31,14 +37,25 @@ function FolderCover({ folder }: FolderCoverProps): JSX.Element {
   }
 
   return (
-    <Image
-      src={folder.coverUrl}
-      alt={folder.name}
-      fill
-      sizes="(max-width: 768px) 100vw, (max-width: 1120px) 50vw, 33vw"
-      className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-      onError={() => setImageFailed(true)}
-    />
+    <>
+      {!imageLoaded ? (
+        <div className="absolute inset-0 bg-gradient-to-br from-surface via-[#efe2d6] to-highlight/45">
+          <div className="absolute inset-x-0 top-0 h-1 bg-red/70" />
+        </div>
+      ) : null}
+      <Image
+        src={folder.coverUrl}
+        alt={folder.name}
+        fill
+        sizes="(max-width: 768px) 100vw, (max-width: 1120px) 50vw, 33vw"
+        className={cn(
+          "object-cover transition-[opacity,transform] duration-500 group-hover:scale-[1.04]",
+          imageLoaded ? "opacity-100" : "opacity-0"
+        )}
+        onError={() => setImageFailed(true)}
+        onLoad={() => setImageLoaded(true)}
+      />
+    </>
   );
 }
 

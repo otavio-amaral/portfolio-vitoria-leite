@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import type { PanInfo } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { MediaItem } from "@/types/portfolio";
 
 interface LightboxProps {
@@ -15,6 +15,12 @@ interface LightboxProps {
 
 export function Lightbox({ item, onClose, onNext, onPrevious }: LightboxProps): JSX.Element {
   const [copied, setCopied] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+
+  useEffect(() => {
+    setCopied(false);
+    setImageLoaded(false);
+  }, [item?.id]);
 
   function handleDragEnd(_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo): void {
     if (info.offset.x < -80) {
@@ -97,7 +103,19 @@ export function Lightbox({ item, onClose, onNext, onPrevious }: LightboxProps): 
             dragConstraints={{ left: 0, right: 0 }}
             onDragEnd={handleDragEnd}
           >
-            <Image src={item.fullUrl} alt={item.name} fill sizes="100vw" className="object-contain p-8 md:p-14" />
+            {!imageLoaded ? (
+              <div className="absolute inset-6 grid place-items-center md:inset-12">
+                <div className="h-full max-h-[72vh] w-full max-w-4xl animate-pulse bg-surface/80 shadow-[0_18px_50px_rgba(26,26,26,0.10)]" />
+              </div>
+            ) : null}
+            <Image
+              src={item.fullUrl}
+              alt={item.name}
+              fill
+              sizes="100vw"
+              className={`object-contain p-8 transition-opacity duration-500 md:p-14 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
+              onLoad={() => setImageLoaded(true)}
+            />
           </motion.div>
         </motion.div>
       ) : null}

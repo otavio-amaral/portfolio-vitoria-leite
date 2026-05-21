@@ -144,6 +144,12 @@ export function MasonryGrid({
 
   return (
     <>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3 font-ui text-xs font-extrabold uppercase tracking-[0.14em] text-muted">
+        <p>
+          {visibleItems.length} de {items.length} mídias exibidas
+        </p>
+        {items.length > visibleItems.length ? <p>mais imagens aparecem ao rolar</p> : <p>fim do ensaio</p>}
+      </div>
       <motion.div
         layout
         className={cn(

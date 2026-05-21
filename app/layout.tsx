@@ -30,13 +30,30 @@ const body = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: `${SITE_CONFIG.fullName} | Portfólio`,
-  description: SITE_CONFIG.tagline,
-  metadataBase: new URL("https://vitorialeite.com"),
+  title: `${SITE_CONFIG.fullName} | Fotografia e Video Maker`,
+  description:
+    "Portfólio de Vitória Leite, fotógrafa e videomaker focada em ensaios, detalhes espontâneos, imagens documentais e conteúdo visual com sensibilidade.",
+  metadataBase: new URL("https://portfolio-vitoria-leite.vercel.app"),
+  keywords: ["Vitória Leite", "fotógrafa", "videomaker", "ensaios fotográficos", "fotografia documental", "portfolio fotografia"],
   openGraph: {
-    title: `${SITE_CONFIG.fullName} | Portfólio`,
-    description: SITE_CONFIG.tagline,
-    type: "website"
+    title: `${SITE_CONFIG.fullName} | Fotografia e Video Maker`,
+    description: "Ensaios, campanhas e registros documentais com verdade, leveza e sensibilidade.",
+    type: "website",
+    url: "https://portfolio-vitoria-leite.vercel.app",
+    images: [
+      {
+        url: SITE_CONFIG.mainPortraitUrl,
+        width: 1200,
+        height: 1600,
+        alt: SITE_CONFIG.fullName
+      }
+    ]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_CONFIG.fullName} | Fotografia e Video Maker`,
+    description: "Ensaios, campanhas e registros documentais com verdade, leveza e sensibilidade.",
+    images: [SITE_CONFIG.mainPortraitUrl]
   }
 };
 

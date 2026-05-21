@@ -1,9 +1,12 @@
 import Link from "next/link";
-import { SITE_CONFIG } from "@/lib/constants";
 import { MagneticButton } from "@/components/ui/MagneticButton";
+import { SITE_CONFIG } from "@/lib/constants";
+import { formatWhatsAppLink } from "@/lib/utils";
 
 export function Contact(): JSX.Element {
   const instagramDmUrl = "https://ig.me/m/viemfoco";
+  const whatsappMessage = "Oi, Vitória! Vim pelo site e queria conversar sobre um ensaio, evento ou campanha.";
+  const whatsappUrl = `${formatWhatsAppLink(SITE_CONFIG.whatsapp)}?text=${encodeURIComponent(whatsappMessage)}`;
 
   return (
     <section className="bg-bg py-24 md:py-32" id="contato">
@@ -30,12 +33,21 @@ export function Contact(): JSX.Element {
         <div className="paper-tape sticker paper-surface rotate-[1.5deg] p-8 md:p-10">
           <p className="font-ui text-xs font-black uppercase tracking-[0.22em] text-red">atalho para orçamento</p>
           <h3 className="mt-5 font-display text-6xl uppercase leading-none text-text md:text-8xl">
-            chama no <span className="font-accent text-5xl normal-case text-red md:text-7xl">Instagram</span>
+            quer registrar um <span className="font-accent text-5xl normal-case text-red md:text-7xl">momento?</span>
           </h3>
           <p className="mt-6 max-w-lg font-ui text-lg font-bold leading-relaxed text-muted">
-            Envie uma DM para {SITE_CONFIG.instagram} dizendo “vim pelo site” e conte rapidinho qual é o projeto.
+            Conte se a ideia é um ensaio, evento ou campanha. A Vitória responde com caminhos possíveis, datas e próximos passos.
           </p>
-          <div className="mt-10">
+          <div className="mt-10 flex flex-wrap gap-3">
+            <MagneticButton
+              href={whatsappUrl}
+              target="_blank"
+              rel="noreferrer"
+              variant="whatsapp"
+              ariaLabel="Chamar Vitória no WhatsApp"
+            >
+              Chamar no WhatsApp
+            </MagneticButton>
             <MagneticButton
               href={instagramDmUrl}
               target="_blank"
@@ -43,7 +55,7 @@ export function Contact(): JSX.Element {
               className="bg-transparent text-[var(--sticker-ink)]"
               ariaLabel="Abrir DM da Vitória no Instagram"
             >
-              Mandar DM no Instagram
+              DM no Instagram
             </MagneticButton>
           </div>
           <p className="mt-6 font-ui text-xs font-bold uppercase tracking-[0.16em] text-muted">
