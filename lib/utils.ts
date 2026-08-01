@@ -10,10 +10,24 @@ export function formatWhatsAppLink(phone: string): string {
   return `https://wa.me/${digits}`;
 }
 
-export function isEmbeddableVideoUrl(value: string | undefined): boolean {
+export function getEmbeddableVideoUrl(value: string | undefined): string | null {
   if (!value) {
-    return false;
+    return null;
   }
 
-  return value.includes("youtube.com/embed") || value.includes("player.vimeo.com/video");
+  try {
+    const url = new URL(value);
+    const isYoutube =
+      ["youtube.com", "www.youtube.com", "www.youtube-nocookie.com"].includes(url.hostname) &&
+      url.pathname.startsWith("/embed/");
+    const isVimeo = url.hostname === "player.vimeo.com" && url.pathname.startsWith("/video/");
+
+    return url.protocol === "https:" && (isYoutube || isVimeo) ? url.toString() : null;
+  } catch {
+    return null;
+  }
+}
+
+export function isEmbeddableVideoUrl(value: string | undefined): boolean {
+  return getEmbeddableVideoUrl(value) !== null;
 }

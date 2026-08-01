@@ -8,7 +8,7 @@ interface MagneticPosition {
 }
 
 interface MagneticEffect {
-  ref: React.RefObject<HTMLButtonElement | HTMLAnchorElement>;
+  ref: React.RefObject<HTMLButtonElement | HTMLAnchorElement | null>;
   position: MagneticPosition;
   handleMouseMove: (event: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => void;
   handleMouseLeave: () => void;

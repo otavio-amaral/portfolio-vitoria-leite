@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type JSX } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useIntersection } from "@/hooks/useIntersection";
 import { SkeletonCard } from "@/components/ui/SkeletonCard";
@@ -31,80 +31,18 @@ export function MasonryGrid({
   projectTitle
 }: MasonryGridProps): JSX.Element {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
-  const [photoClicks, setPhotoClicks] = useState<Record<string, number>>({});
   const [sentinelRef, isSentinelVisible] = useIntersection<HTMLDivElement>({ rootMargin: "320px" });
   const visibleItems = useMemo(() => items.slice(0, visibleCount), [items, visibleCount]);
-  const photoIds = useMemo(() => items.filter((item) => item.mediaType === "image").map((item) => item.id), [items]);
 
   useEffect(() => {
-    setVisibleCount(PAGE_SIZE);
-  }, [items]);
+    if (!isSentinelVisible) return undefined;
 
-  useEffect(() => {
-    if (isSentinelVisible) {
+    const frame = window.requestAnimationFrame(() => {
       setVisibleCount((current) => Math.min(current + PAGE_SIZE, items.length));
-    }
+    });
+
+    return () => window.cancelAnimationFrame(frame);
   }, [isSentinelVisible, items.length]);
-
-  useEffect(() => {
-    if (!photoIds.length) {
-      setPhotoClicks({});
-      return;
-    }
-
-    const controller = new AbortController();
-
-    async function loadPhotoClicks(): Promise<void> {
-      try {
-        const response = await fetch(`/api/album-clicks?type=photo&ids=${encodeURIComponent(photoIds.join(","))}`, {
-          cache: "no-store",
-          signal: controller.signal
-        });
-
-        if (!response.ok) {
-          return;
-        }
-
-        const data = (await response.json()) as { counts?: Record<string, number> };
-        setPhotoClicks(data.counts ?? {});
-      } catch {
-        if (!controller.signal.aborted) {
-          setPhotoClicks({});
-        }
-      }
-    }
-
-    void loadPhotoClicks();
-
-    return () => controller.abort();
-  }, [photoIds]);
-
-  function handleOpenImage(item: MediaItem): void {
-    const optimisticCount = (photoClicks[item.id] ?? 0) + 1;
-
-    setPhotoClicks((current) => ({ ...current, [item.id]: optimisticCount }));
-    void fetch("/api/album-clicks", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ type: "photo", targetId: item.id })
-    })
-      .then(async (response) => {
-        if (!response.ok) {
-          return;
-        }
-
-        const data = (await response.json()) as { count?: number };
-
-        if (typeof data.count === "number") {
-          setPhotoClicks((current) => ({ ...current, [item.id]: data.count ?? optimisticCount }));
-        }
-      })
-      .catch(() => undefined);
-
-    onOpenImage(item);
-  }
 
   if (isLoading) {
     return (
@@ -144,12 +82,6 @@ export function MasonryGrid({
 
   return (
     <>
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-3 font-ui text-xs font-extrabold uppercase tracking-[0.14em] text-muted">
-        <p>
-          {visibleItems.length} de {items.length} mídias exibidas
-        </p>
-        {items.length > visibleItems.length ? <p>mais imagens aparecem ao rolar</p> : <p>fim do ensaio</p>}
-      </div>
       <motion.div
         layout
         className={cn(
@@ -161,11 +93,10 @@ export function MasonryGrid({
             <div className={cn(viewMode === "grid" ? "mb-5 break-inside-avoid" : "w-full")} key={item.id}>
               <MediaCard
                 item={item}
-                onOpenImage={handleOpenImage}
+                onOpenImage={onOpenImage}
                 onOpenVideo={onOpenVideo}
                 viewMode={viewMode}
                 projectTitle={projectTitle}
-                clickCount={photoClicks[item.id] ?? 0}
               />
             </div>
           ))}

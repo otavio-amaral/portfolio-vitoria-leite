@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import type { Category, PortfolioFolder } from "@/types/portfolio";
 
 interface DriveFoldersState {
@@ -9,32 +9,29 @@ interface DriveFoldersState {
   error: string | null;
 }
 
+interface FolderRequestState extends DriveFoldersState {
+  category: Category;
+}
+
 type FolderCache = Partial<Record<Category, PortfolioFolder[]>>;
+const folderCache: FolderCache = {};
 
 export function useDriveFolders(category: Category): DriveFoldersState {
-  const cache = useRef<FolderCache>({});
-  const [state, setState] = useState<DriveFoldersState>({
-    folders: [],
-    isLoading: true,
+  const [request, setRequest] = useState<FolderRequestState>({
+    category,
+    folders: folderCache[category] ?? [],
+    isLoading: !folderCache[category],
     error: null
   });
 
   useEffect(() => {
-    let isMounted = true;
-    const cachedFolders = cache.current[category];
+    const controller = new AbortController();
 
-    if (cachedFolders) {
-      setState({ folders: cachedFolders, isLoading: false, error: null });
-      return () => {
-        isMounted = false;
-      };
-    }
-
-    setState((current) => ({ ...current, isLoading: true, error: null }));
+    if (folderCache[category]) return () => controller.abort();
 
     async function loadFolders(): Promise<void> {
       try {
-        const response = await fetch(`/api/drive/${category}?view=folders`);
+        const response = await fetch(`/api/drive/${category}?view=folders`, { signal: controller.signal });
 
         if (!response.ok) {
           const data = (await response.json()) as { error?: string };
@@ -42,25 +39,21 @@ export function useDriveFolders(category: Category): DriveFoldersState {
         }
 
         const folders = (await response.json()) as PortfolioFolder[];
-        cache.current[category] = folders;
-
-        if (isMounted) {
-          setState({ folders, isLoading: false, error: null });
-        }
+        folderCache[category] = folders;
+        setRequest({ category, folders, isLoading: false, error: null });
       } catch (error) {
-        if (isMounted) {
-          const message = error instanceof Error ? error.message : "Erro ao carregar ensaios.";
-          setState({ folders: [], isLoading: false, error: message });
-        }
+        if (controller.signal.aborted) return;
+        const message = error instanceof Error ? error.message : "Erro ao carregar ensaios.";
+        setRequest({ category, folders: [], isLoading: false, error: message });
       }
     }
 
     void loadFolders();
-
-    return () => {
-      isMounted = false;
-    };
+    return () => controller.abort();
   }, [category]);
 
-  return state;
+  if (request.category === category) return request;
+
+  const cachedFolders = folderCache[category];
+  return { folders: cachedFolders ?? [], isLoading: !cachedFolders, error: null };
 }

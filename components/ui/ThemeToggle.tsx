@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type JSX } from "react";
 import { motion } from "framer-motion";
 
 type Theme = "light" | "dark";
@@ -31,9 +31,11 @@ export function ThemeToggle(): JSX.Element {
     const initialPreference = savedTheme === "dark" || savedTheme === "light" ? savedTheme : "system";
     const initialTheme = initialPreference === "system" ? systemTheme() : initialPreference;
 
-    setPreference(initialPreference);
-    setTheme(initialTheme);
     applyTheme(initialTheme);
+    const frame = window.requestAnimationFrame(() => {
+      setPreference(initialPreference);
+      setTheme(initialTheme);
+    });
 
     function handleSystemChange(event: MediaQueryListEvent): void {
       const savedPreference = window.localStorage.getItem(STORAGE_KEY);
@@ -48,7 +50,10 @@ export function ThemeToggle(): JSX.Element {
     }
 
     media.addEventListener("change", handleSystemChange);
-    return () => media.removeEventListener("change", handleSystemChange);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      media.removeEventListener("change", handleSystemChange);
+    };
   }, []);
 
   function toggleTheme(): void {

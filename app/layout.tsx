@@ -1,84 +1,88 @@
-import type { Metadata } from "next";
+import type { JSX, ReactNode } from "react";
+import type { Metadata, Viewport } from "next";
+import { Bodoni_Moda, Manrope } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Bebas_Neue, Dancing_Script, Outfit } from "next/font/google";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import { PageTransition } from "@/components/layout/PageTransition";
-import { GrainOverlay } from "@/components/ui/GrainOverlay";
-import { ScrollProgress } from "@/components/ui/ScrollProgress";
-import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { MotionProvider } from "@/components/ui/MotionProvider";
 import { SITE_CONFIG } from "@/lib/constants";
 import "./globals.css";
 
-const display = Bebas_Neue({
+const display = Bodoni_Moda({
   subsets: ["latin"],
-  weight: ["400"],
-  variable: "--font-display"
+  variable: "--font-display",
+  display: "swap"
 });
 
-const accent = Dancing_Script({
+const body = Manrope({
   subsets: ["latin"],
-  weight: ["700"],
-  variable: "--font-accent"
+  variable: "--font-body",
+  display: "swap"
 });
 
-const body = Outfit({
-  subsets: ["latin"],
-  weight: ["400", "500", "700", "800"],
-  variable: "--font-body"
-});
+const title = `${SITE_CONFIG.fullName} | Fotografia, vídeo e social media`;
 
 export const metadata: Metadata = {
-  title: `${SITE_CONFIG.fullName} | Fotografia e Video Maker`,
-  description:
-    "Portfólio de Vitória Leite, fotógrafa e videomaker focada em ensaios, detalhes espontâneos, imagens documentais e conteúdo visual com sensibilidade.",
-  metadataBase: new URL("https://portfolio-vitoria-leite.vercel.app"),
-  keywords: ["Vitória Leite", "fotógrafa", "videomaker", "ensaios fotográficos", "fotografia documental", "portfolio fotografia"],
+  metadataBase: new URL(SITE_CONFIG.url),
+  title: {
+    default: title,
+    template: `%s | ${SITE_CONFIG.fullName}`
+  },
+  description: SITE_CONFIG.tagline,
+  applicationName: SITE_CONFIG.fullName,
+  authors: [{ name: SITE_CONFIG.fullName, url: SITE_CONFIG.url }],
+  creator: SITE_CONFIG.fullName,
+  alternates: { canonical: "/" },
+  keywords: ["fotografia", "videomaker", "social media", "direção de fotografia", "São Paulo"],
+  icons: {
+    icon: [{ url: SITE_CONFIG.logoUrl, type: "image/webp" }],
+    apple: [{ url: SITE_CONFIG.logoUrl, type: "image/webp" }]
+  },
+  manifest: "/manifest.webmanifest",
   openGraph: {
-    title: `${SITE_CONFIG.fullName} | Fotografia e Video Maker`,
-    description: "Ensaios, campanhas e registros documentais com verdade, leveza e sensibilidade.",
+    title,
+    description: SITE_CONFIG.tagline,
+    url: SITE_CONFIG.url,
+    siteName: SITE_CONFIG.fullName,
+    locale: "pt_BR",
     type: "website",
-    url: "https://portfolio-vitoria-leite.vercel.app",
-    images: [
-      {
-        url: SITE_CONFIG.mainPortraitUrl,
-        width: 1200,
-        height: 1600,
-        alt: SITE_CONFIG.fullName
-      }
-    ]
+    images: [{ url: SITE_CONFIG.portraitUrl, width: 1200, height: 1200, alt: SITE_CONFIG.fullName }]
   },
   twitter: {
     card: "summary_large_image",
-    title: `${SITE_CONFIG.fullName} | Fotografia e Video Maker`,
-    description: "Ensaios, campanhas e registros documentais com verdade, leveza e sensibilidade.",
-    images: [SITE_CONFIG.mainPortraitUrl]
-  }
+    title,
+    description: SITE_CONFIG.tagline,
+    images: [SITE_CONFIG.portraitUrl]
+  },
+  robots: { index: true, follow: true }
+};
+
+export const viewport: Viewport = {
+  themeColor: "#f6f2ec"
 };
 
 interface RootLayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export default function RootLayout({ children }: RootLayoutProps): JSX.Element {
   return (
-    <html lang="pt-BR" className={`${display.variable} ${accent.variable} ${body.variable}`} suppressHydrationWarning>
+    <html lang="pt-BR" className={`${display.variable} ${body.variable}`} data-scroll-behavior="smooth">
       <body>
-        <script
-          dangerouslySetInnerHTML={{
-            __html:
-              "try{var p=localStorage.getItem('vitoria-theme');var t=(p==='dark'||p==='light')?p:(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=t;}catch(e){}"
-          }}
-        />
-        <ScrollProgress />
-        <GrainOverlay />
-        <ThemeToggle />
-        <Navbar />
-        <PageTransition>{children}</PageTransition>
-        <Footer />
-        <Analytics />
-        <SpeedInsights />
+        <a className="skip-link" href="#main-content">Pular para o conteúdo</a>
+        <MotionProvider>
+          <Navbar />
+          <PageTransition>{children}</PageTransition>
+          <Footer />
+        </MotionProvider>
+        {process.env.VERCEL === "1" ? (
+          <>
+            <Analytics />
+            <SpeedInsights />
+          </>
+        ) : null}
       </body>
     </html>
   );

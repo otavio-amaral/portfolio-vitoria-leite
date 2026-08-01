@@ -12,3 +12,6 @@ next-dev.err.log
 
 *.tsbuildinfo
 .DS_Store
+
+.vercel
+.env*

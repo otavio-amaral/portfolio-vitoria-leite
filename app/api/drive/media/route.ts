@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { getDriveMediaById } from "@/lib/drive";
+import { DriveAccessError, getDriveMediaById } from "@/lib/drive";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -13,22 +14,33 @@ function sanitizeFileId(value: string | null): string | null {
 }
 
 export async function GET(request: Request): Promise<NextResponse> {
+  const rateLimit = checkRateLimit(request, "drive-media", 60);
+
+  if (!rateLimit.allowed) {
+    return NextResponse.json({ error: "Muitas solicitações. Tente novamente em instantes." }, { status: 429, headers: rateLimit.headers });
+  }
+
   const { searchParams } = new URL(request.url);
   const id = sanitizeFileId(searchParams.get("id"));
 
   if (!id) {
-    return NextResponse.json({ error: "Mídia inválida." }, { status: 400 });
+    return NextResponse.json({ error: "Mídia inválida." }, { status: 400, headers: rateLimit.headers });
   }
 
   try {
     const item = await getDriveMediaById(id);
     return NextResponse.json(item, {
       headers: {
-        "Cache-Control": "no-store"
+        "Cache-Control": "private, max-age=300",
+        ...rateLimit.headers
       }
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Erro desconhecido";
-    return NextResponse.json({ error: message }, { status: 500 });
+    if (error instanceof DriveAccessError) {
+      return NextResponse.json({ error: "Mídia não encontrada." }, { status: 404, headers: rateLimit.headers });
+    }
+
+    console.error("Falha ao carregar mídia compartilhada", error);
+    return NextResponse.json({ error: "Não foi possível carregar a mídia." }, { status: 502, headers: rateLimit.headers });
   }
 }

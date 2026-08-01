@@ -5,6 +5,8 @@ export interface DriveFile {
   name: string;
   description?: string;
   mimeType: string;
+  parents?: string[];
+  createdTime?: string;
   thumbnailLink?: string;
   imageMediaMetadata?: {
     width?: number;
@@ -14,6 +16,7 @@ export interface DriveFile {
 
 export interface DriveApiResponse {
   files: DriveFile[];
+  nextPageToken?: string;
 }
 
 export interface DriveMetadataResponse {

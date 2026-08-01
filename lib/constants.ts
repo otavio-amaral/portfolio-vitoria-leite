@@ -3,28 +3,25 @@ import type { PortfolioCategory, ServiceItem, SocialReelItem, TestimonialItem } 
 export const SITE_CONFIG = {
   name: "Vitória",
   fullName: "Vitória Leite",
-  tagline: "Social Media · Fotografia · Video Maker · Direção de Fotografia",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://portfolio-vitoria-delta.vercel.app",
+  tagline: "Fotografia · Filme · Conteúdo",
   about:
-    "Sou fotógrafa e videomaker, com foco em detalhes e imagens documentais. Meu trabalho nasce do desejo de registrar momentos espontâneos, únicos e cheios de intenção — cenas simples, naturais e verdadeiras, que muitas vezes passam despercebidas.",
-  quote: "Gosto de captar momentos únicos e diferentes, com verdade, leveza e sensibilidade.",
+    "Vitória transforma histórias, pessoas e marcas em imagens com intenção. Seu trabalho cruza fotografia, filme e estratégia de conteúdo para criar uma presença visual sensível, contemporânea e reconhecível.",
+  quote: "Gosto de dirigir cada detalhe sem tirar da imagem aquilo que ela tem de mais vivo.",
   email: "contato@vitorialeite.com",
   whatsapp: "+55 (11) 98336-6510",
   instagram: "@viemfoco",
   instagramUrl: "https://instagram.com/viemfoco",
   location: "São Paulo, Brasil",
-  heroVideoUrl: "/showreel.mp4",
-  heroPosterUrl: "https://drive.google.com/thumbnail?id=1&sz=w1600",
-  logoUrl: "/images/logo-viemfoco.png",
+  logoUrl: "/images/logo-viemfoco.webp",
   portraitUrl: "/images/vitoria-principal.jpeg",
-  mainPortraitUrl: "/images/vitoria-principal.jpeg",
   localPortraits: [
     { src: "/images/vitoria-principal.jpeg", alt: "Vitória Leite segurando uma câmera" },
     { src: "/images/vitoria-camera.jpeg", alt: "Vitória Leite fotografando com câmera Canon" },
     { src: "/images/vitoria-pb.jpeg", alt: "Retrato em preto e branco de Vitória Leite com câmera" }
   ],
-  heroAccentWord: "criativa",
+  heroAccentWord: "um olhar atento",
   emptyPortfolioMessage: "Nenhuma mídia publicada nesta categoria.",
-  messageFieldLabel: "Mensagem",
   stats: [
     { value: 120, label: "posts, campanhas e frames", suffix: "+" },
     { value: 5, label: "anos criando para tela", suffix: "+" },
@@ -34,10 +31,10 @@ export const SITE_CONFIG = {
   navItems: [
     { label: "Início", href: "#inicio", icon: "home" },
     { label: "Sobre", href: "#sobre", icon: "spark" },
-    { label: "Feed", href: "#portfolio", icon: "grid" },
-    { label: "Reel", href: "#showreel", icon: "play" },
+    { label: "Trabalhos", href: "#portfolio", icon: "grid" },
+    { label: "Vídeos", href: "#showreel", icon: "play" },
     { label: "Serviços", href: "#servicos", icon: "tag" },
-    { label: "DM", href: "#contato", icon: "dm" }
+    { label: "Contato", href: "#contato", icon: "dm" }
   ],
   heroRoles: ["Social Media", "Fotógrafa", "Video Maker", "Diretora de Fotografia"],
   heroCollage: [
@@ -54,37 +51,34 @@ export const SITE_CONFIG = {
     { id: "feed", label: "Feed" }
   ],
   socialLinks: [
-    { label: "Instagram", href: "https://instagram.com/viemfoco" },
-    { label: "Pinterest", href: "https://pinterest.com" },
-    { label: "TikTok", href: "https://tiktok.com" }
+    { label: "Instagram", href: "https://instagram.com/viemfoco" }
   ]
 } as const;
 
 export const CATEGORIES: PortfolioCategory[] = [
   { id: "todos", label: "Todos" },
-  { id: "fotografia", label: "Fotografia" },
-  { id: "social_media", label: "Social Media" }
+  { id: "fotografia", label: "Fotografia" }
 ];
 
 export const SERVICES: ServiceItem[] = [
   {
-    title: "Gestão de Redes Sociais",
-    description: "Calendário, narrativa visual, linguagem de marca e conteúdo que parece nativo do feed.",
+    title: "Social Media & Conteúdo",
+    description: "Estratégia, narrativa visual e conteúdo pensado para tornar a presença da marca mais clara e consistente.",
     icon: "social"
   },
   {
-    title: "Ensaios Fotográficos",
-    description: "Retratos e campanhas com estética de câmera real, pele viva, textura e presença.",
+    title: "Ensaios & Retratos",
+    description: "Retratos pessoais, celebrações e campanhas conduzidos com leveza, direção e atenção ao que é autêntico.",
     icon: "photo"
   },
   {
-    title: "Produção de Vídeo",
-    description: "Reels, TikToks, bastidores, cortes sociais e vídeos com ritmo de plataforma.",
+    title: "Filmes & Reels",
+    description: "Vídeos curtos, bastidores e narrativas em movimento com ritmo, enquadramento e identidade.",
     icon: "video"
   },
   {
-    title: "Dir. de Fotografia",
-    description: "Luz, cor, enquadramento e mood para deixar cada cena com identidade compartilhável.",
+    title: "Direção de Imagem",
+    description: "Luz, cor, enquadramento e direção criativa para construir uma linguagem visual que permanece.",
     icon: "direction"
   }
 ];
@@ -125,12 +119,6 @@ export const SOCIAL_REELS: SocialReelItem[] = [
     title: "A Sala Secreta · Reel 03",
     url: "https://www.instagram.com/reel/DSGMEBXkljb/",
     embedUrl: "https://www.instagram.com/reel/DSGMEBXkljb/embed"
-  },
-  {
-    id: "DRndYJiEuMm",
-    title: "A Sala Secreta · Reel 04",
-    url: "https://www.instagram.com/reel/DRndYJiEuMm/",
-    embedUrl: "https://www.instagram.com/reel/DRndYJiEuMm/embed"
   },
   {
     id: "DYNmDFmve7E",
@@ -175,12 +163,6 @@ export const SOCIAL_REELS: SocialReelItem[] = [
     embedUrl: "https://www.instagram.com/reel/DXKwWYXDPaP/embed"
   }
 ];
-
-export const CONTACT_FIELDS = [
-  { id: "name", label: "Nome", type: "text", autoComplete: "name" },
-  { id: "email", label: "E-mail", type: "email", autoComplete: "email" },
-  { id: "project", label: "Projeto", type: "text", autoComplete: "off" }
-] as const;
 
 export const DRIVE_CATEGORY_ENV_KEYS = {
   fotografia: "DRIVE_FOLDER_FOTOGRAFIA",

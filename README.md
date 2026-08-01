@@ -1,98 +1,60 @@
-# Portfólio Profissional Vitória
+# Portfólio profissional — Vitória Leite
 
-Portfólio cinematográfico/editorial em Next.js 14 para Vitória, criativa que atua como Social Media, Fotógrafa, Video Maker e Diretora de Fotografia.
+Portfólio editorial para fotografia, vídeo e social media, construído com Next.js 16, React 19, TypeScript, Tailwind CSS e Framer Motion. As imagens e os projetos são lidos da API do Google Drive pelo servidor.
 
-## Stack
+## Requisitos
 
-- Next.js 14 com App Router
-- TypeScript estrito
-- Tailwind CSS
-- Framer Motion
-- Google Drive API v3 para imagens e vídeos
+- Node.js 20.9 ou superior (Node 24 é usado na CI)
+- Uma chave da Google Drive API v3
+- Pastas públicas no Google Drive
 
 ## Setup local
 
-1. Instale as dependências:
-
 ```bash
 npm install
-```
-
-2. Copie o arquivo de ambiente:
-
-```bash
-cp .env.local.example .env.local
-```
-
-3. Preencha `.env.local`:
-
-```bash
-GOOGLE_DRIVE_API_KEY=sua_api_key
-DRIVE_FOLDER_FOTOGRAFIA=id_da_pasta_fotografia
-DRIVE_FOLDER_SOCIAL_MEDIA=id_da_pasta_social_media
-DRIVE_FOLDER_VIDEO=id_da_pasta_video
-DRIVE_FOLDER_DIRECAO=id_da_pasta_direcao
-DRIVE_FOLDER_TODOS=id_da_pasta_com_tudo
-```
-
-4. Rode o projeto:
-
-```bash
+Copy-Item .env.local.example .env.local
 npm run dev
 ```
 
-## Como configurar o Google Drive
+Preencha `.env.local` com a chave da API e os IDs das pastas. O arquivo real de ambiente não deve ser versionado.
 
-1. Crie uma pasta no Google Drive para cada categoria: Fotografia, Social Media, Vídeo, Direção e Todos.
-2. Faça upload dos arquivos de imagem e vídeo nas respectivas pastas.
-3. Compartilhe cada pasta como "Qualquer pessoa com o link pode visualizar".
-4. Abra cada pasta no navegador e copie o ID da URL. Em uma URL como `https://drive.google.com/drive/folders/ABC123`, o ID é `ABC123`.
-5. No Google Cloud Console, crie ou selecione um projeto.
-6. Ative a Google Drive API.
-7. Crie uma API key em "APIs e serviços" > "Credenciais".
-8. Restrinja a chave para a Google Drive API e, em produção, limite os referrers/domínios permitidos.
-9. Coloque a chave e os IDs das pastas no `.env.local`.
+## Organização do Drive
 
-## Como as mídias são lidas
+Cada variável `DRIVE_FOLDER_*` aponta para a raiz de uma categoria. A raiz pode conter os arquivos diretamente ou pastas-filhas, usadas como projetos/ensaios. A aplicação pagina os resultados, ordena pastas por nome e mídias pelas mais recentes.
 
-O route handler `app/api/drive/[category]/route.ts` recebe uma categoria, resolve a pasta correspondente por variável de ambiente e consulta:
+Para uma apresentação melhor:
 
-```txt
-https://www.googleapis.com/drive/v3/files
-```
+- dê nomes legíveis aos arquivos, pois eles são usados como texto alternativo quando não há descrição;
+- use a descrição da pasta como resumo do projeto;
+- para escolher uma capa, adicione `coverId: ID_DO_ARQUIVO` à descrição da pasta;
+- para um card de vídeo, use exclusivamente uma URL embed HTTPS do YouTube ou Vimeo na descrição do arquivo.
 
-Campos usados:
-
-```txt
-files(id,name,description,mimeType,thumbnailLink,imageMediaMetadata)
-```
-
-O servidor converte cada arquivo em `MediaItem`, usando thumbnail do Drive, URL full-size via `lh3.googleusercontent.com/d/{fileId}` e cache com revalidação de 3600 segundos.
-
-## Conteúdo editável
-
-Textos, dados de contato, estatísticas, serviços, depoimentos, categorias e links sociais ficam centralizados em `lib/constants.ts`.
-
-## Vídeos
-
-Arquivos de vídeo no Drive aparecem como cards de vídeo no portfólio. Para abrir YouTube ou Vimeo no modal, coloque a URL embed no campo de descrição do arquivo no Drive, por exemplo:
+Exemplos aceitos:
 
 ```txt
 https://www.youtube.com/embed/ID_DO_VIDEO
-```
-
-ou:
-
-```txt
 https://player.vimeo.com/video/ID_DO_VIDEO
 ```
 
-## Verificação
+Pastas e arquivos arbitrários não são expostos: as rotas conferem se o ID solicitado pertence às raízes configuradas. As APIs também aplicam timeout, cache e rate limit local por IP.
 
-Com as dependências instaladas:
+## Conteúdo editável
+
+Textos, contato, serviços, depoimentos, categorias e links sociais ficam em `lib/constants.ts`. Reels do Instagram também são cadastrados nesse arquivo e apenas três embeds são carregados na página inicial.
+
+## Qualidade
 
 ```bash
-npm run build
+npm run lint       # ESLint
+npm run typecheck  # TypeScript
+npm run test       # Vitest + Testing Library
+npm run build      # build de produção
+npm run check      # executa toda a sequência acima
+npm audit          # vulnerabilidades conhecidas
 ```
 
-O build valida TypeScript, App Router e configuração de imagens remotas.
+O workflow em `.github/workflows/ci.yml` executa auditoria e validação completa em pushes e pull requests.
+
+## SEO e produção
+
+O projeto inclui metadados sociais, canonical, JSON-LD, sitemap, robots, manifest, Analytics/Speed Insights e cabeçalhos de segurança. Antes de publicar, confirme o domínio em `SITE_CONFIG.url`, restrinja a chave no Google Cloud à Google Drive API e configure as mesmas variáveis de ambiente na hospedagem.

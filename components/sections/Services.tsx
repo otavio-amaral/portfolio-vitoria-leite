@@ -1,57 +1,53 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Aperture, Camera, ShareNetwork, VideoCamera } from "@phosphor-icons/react";
 import { SERVICES } from "@/lib/constants";
 import type { ServiceItem } from "@/types/portfolio";
+import type { JSX } from "react";
 
 interface ServiceIconProps {
   icon: ServiceItem["icon"];
 }
 
 function ServiceIcon({ icon }: ServiceIconProps): JSX.Element {
-  const paths: Record<ServiceItem["icon"], string> = {
-    social: "M7 17h10M7 12h14M7 7h10M5 3h18v18H5z",
-    photo: "M4 8h4l2-3h4l2 3h4v12H4z M12 11a4 4 0 100 8 4 4 0 000-8z",
-    video: "M4 6h13v12H4z M17 10l5-3v10l-5-3z",
-    direction: "M12 3v18M3 12h18M6 6l12 12M18 6L6 18"
-  };
-
-  return (
-    <svg viewBox="0 0 24 24" className="h-12 w-12 text-red" fill="none" role="img" aria-label={icon}>
-      <motion.path
-        d={paths[icon]}
-        stroke="currentColor"
-        strokeWidth="1.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        initial={{ pathLength: 0.2 }}
-        whileHover={{ pathLength: 1 }}
-        transition={{ duration: 0.8 }}
-      />
-    </svg>
-  );
+  const props = { size: 30, weight: "light" as const, "aria-hidden": true };
+  if (icon === "social") return <ShareNetwork {...props} />;
+  if (icon === "photo") return <Camera {...props} />;
+  if (icon === "video") return <VideoCamera {...props} />;
+  return <Aperture {...props} />;
 }
 
 export function Services(): JSX.Element {
   return (
-    <section className="bg-bg py-24 md:py-32" id="servicos">
+    <section className="scroll-mt-24 bg-bg py-24 md:py-32" id="servicos">
       <div className="section-shell">
-        <p className="font-ui text-xs font-black uppercase tracking-[0.22em] text-red">Serviços</p>
-        <h2 className="mt-4 font-display text-7xl uppercase leading-none text-text md:text-9xl">
-          formatos que <span className="font-accent text-5xl normal-case text-red md:text-7xl">circulam</span>
-        </h2>
-        <div className="mt-14 flex gap-5 overflow-x-auto pb-8 md:grid md:grid-cols-2 xl:grid-cols-4">
-          {SERVICES.map((service) => (
+        <div className="grid gap-8 lg:grid-cols-[0.65fr_1.35fr] lg:items-end">
+          <div>
+            <p className="editorial-label text-rose">Serviços</p>
+            <p className="mt-6 max-w-sm text-base leading-8 text-muted">
+              Da estratégia à captação, cada entrega nasce com uma direção visual coerente e feita para circular.
+            </p>
+          </div>
+          <h2 className="font-display text-[clamp(4.5rem,9vw,8.5rem)] leading-[0.84] tracking-[-0.055em] text-plum">
+            Formatos que encontram pessoas.
+          </h2>
+        </div>
+
+        <div className="mt-16 border-t border-border">
+          {SERVICES.map((service, index) => (
             <motion.article
               key={service.title}
-              className="group paper-tape relative min-h-[20rem] min-w-[78vw] border border-border bg-surface p-7 shadow-[0_14px_32px_rgba(26,26,26,0.10)] md:min-w-0"
-              whileHover={{ y: -8 }}
-              transition={{ type: "spring", stiffness: 260, damping: 22 }}
+              className="group grid gap-5 border-b border-border py-8 md:grid-cols-[4rem_1fr_1fr_3rem] md:items-center md:gap-8"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.45 }}
+              transition={{ duration: 0.45, delay: index * 0.05 }}
             >
-              <ServiceIcon icon={service.icon} />
-              <h3 className="mt-12 font-display text-3xl font-light leading-tight text-text">{service.title}</h3>
-              <p className="mt-5 font-body text-lg leading-relaxed text-muted">{service.description}</p>
-              <span className="absolute inset-x-0 bottom-0 h-px origin-left scale-x-0 bg-red transition-transform duration-300 group-hover:scale-x-100" />
+              <span className="text-rose transition-colors group-hover:text-blue"><ServiceIcon icon={service.icon} /></span>
+              <h3 className="font-display text-[clamp(2.3rem,5vw,4.5rem)] leading-[0.92] tracking-[-0.04em] text-plum">{service.title}</h3>
+              <p className="max-w-xl text-sm leading-7 text-muted md:text-base">{service.description}</p>
+              <span className="font-display text-3xl text-rose md:text-right" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
             </motion.article>
           ))}
         </div>

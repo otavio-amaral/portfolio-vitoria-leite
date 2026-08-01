@@ -1,6 +1,7 @@
-"use client";
-
+"use client";;
 import { motion, useScroll } from "framer-motion";
+
+import type { JSX } from "react";
 
 export function ScrollProgress(): JSX.Element {
   const { scrollYProgress } = useScroll();

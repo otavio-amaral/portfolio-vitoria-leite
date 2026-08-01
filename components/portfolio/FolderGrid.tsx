@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { useEffect, useMemo, useState } from "react";
+import { ArrowRight } from "@phosphor-icons/react";
+import { useMemo, useState, type JSX } from "react";
 import { SkeletonCard } from "@/components/ui/SkeletonCard";
 import { SITE_CONFIG } from "@/lib/constants";
 import { cn } from "@/lib/utils";
@@ -19,190 +20,111 @@ interface FolderCoverProps {
   folder: PortfolioFolder;
 }
 
+const PROJECT_LAYOUTS = [
+  "md:col-span-5",
+  "md:col-span-3 md:mt-20",
+  "md:col-span-4",
+  "md:col-span-4 md:mt-6",
+  "md:col-span-5",
+  "md:col-span-3 md:mt-24"
+] as const;
+
+const PROJECT_RATIOS = [
+  "aspect-[4/5]",
+  "aspect-[3/5]",
+  "aspect-[4/3] md:aspect-[4/3]",
+  "aspect-[5/4]",
+  "aspect-[4/5]",
+  "aspect-[3/4]"
+] as const;
+
 function FolderCover({ folder }: FolderCoverProps): JSX.Element {
   const [imageFailed, setImageFailed] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
-
-  useEffect(() => {
-    setImageFailed(false);
-    setImageLoaded(false);
-  }, [folder.coverUrl]);
 
   if (!folder.coverUrl || imageFailed) {
     return (
-      <div className="absolute inset-0 grid place-items-center bg-gradient-to-br from-surface via-border to-rose p-6 text-center font-ui text-xs font-extrabold uppercase tracking-[0.18em] text-muted">
+      <div className="absolute inset-0 grid place-items-center bg-highlight p-6 text-center text-[0.66rem] font-bold uppercase tracking-[0.18em] text-muted">
         capa indisponível
       </div>
     );
   }
 
   return (
-    <>
-      {!imageLoaded ? (
-        <div className="absolute inset-0 bg-gradient-to-br from-surface via-[#efe2d6] to-highlight/45">
-          <div className="absolute inset-x-0 top-0 h-1 bg-red/70" />
-        </div>
-      ) : null}
-      <Image
-        src={folder.coverUrl}
-        alt={folder.name}
-        fill
-        sizes="(max-width: 768px) 100vw, (max-width: 1120px) 50vw, 33vw"
-        className={cn(
-          "object-cover transition-[opacity,transform] duration-500 group-hover:scale-[1.04]",
-          imageLoaded ? "opacity-100" : "opacity-0"
-        )}
-        onError={() => setImageFailed(true)}
-        onLoad={() => setImageLoaded(true)}
-      />
-    </>
+    <Image
+      src={folder.coverUrl}
+      alt=""
+      fill
+      sizes="(max-width: 768px) 100vw, (max-width: 1120px) 50vw, 40vw"
+      className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025]"
+      onError={() => setImageFailed(true)}
+    />
   );
-}
-
-function formatClickCount(count: number): string {
-  return `${count.toLocaleString("pt-BR")} ${count === 1 ? "clique" : "cliques"}`;
 }
 
 export function FolderGrid({ folders, isLoading, error, onOpenFolder }: FolderGridProps): JSX.Element {
   const [showAll, setShowAll] = useState(false);
-  const [albumClicks, setAlbumClicks] = useState<Record<string, number>>({});
   const visibleFolders = useMemo(() => (showAll ? folders : folders.slice(0, 3)), [folders, showAll]);
-
-  useEffect(() => {
-    if (!folders.length) {
-      setAlbumClicks({});
-      return;
-    }
-
-    const controller = new AbortController();
-    const ids = folders.map((folder) => folder.id).join(",");
-
-    async function loadClickCounts(): Promise<void> {
-      try {
-        const response = await fetch(`/api/album-clicks?ids=${encodeURIComponent(ids)}`, {
-          cache: "no-store",
-          signal: controller.signal
-        });
-
-        if (!response.ok) {
-          return;
-        }
-
-        const data = (await response.json()) as { counts?: Record<string, number> };
-        setAlbumClicks(data.counts ?? {});
-      } catch {
-        if (!controller.signal.aborted) {
-          setAlbumClicks({});
-        }
-      }
-    }
-
-    void loadClickCounts();
-
-    return () => controller.abort();
-  }, [folders]);
-
-  function handleOpenFolder(folder: PortfolioFolder): void {
-    const optimisticCount = (albumClicks[folder.id] ?? 0) + 1;
-
-    setAlbumClicks((current) => ({ ...current, [folder.id]: optimisticCount }));
-    void fetch("/api/album-clicks", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ albumId: folder.id })
-    })
-      .then(async (response) => {
-        if (!response.ok) {
-          return;
-        }
-
-        const data = (await response.json()) as { count?: number };
-
-        if (typeof data.count === "number") {
-          setAlbumClicks((current) => ({ ...current, [folder.id]: data.count ?? optimisticCount }));
-        }
-      })
-      .catch(() => undefined);
-    onOpenFolder(folder);
-  }
 
   if (isLoading) {
     return (
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {Array.from({ length: 3 }).map((_, index) => (
-          <SkeletonCard key={index} />
-        ))}
+      <div className="grid gap-5 md:grid-cols-3">
+        {Array.from({ length: 3 }).map((_, index) => <SkeletonCard key={index} />)}
       </div>
     );
   }
 
   if (error) {
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="border border-red/40 bg-red/10 p-6 font-ui text-sm uppercase tracking-[0.18em] text-text"
-      >
-        {error}
-      </motion.div>
-    );
+    return <div className="border-y border-rose bg-rose/10 p-6 text-sm text-plum">{error}</div>;
   }
 
   if (!folders.length) {
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="border border-border bg-surface p-6 font-ui text-sm uppercase tracking-[0.18em] text-muted"
-      >
-        {SITE_CONFIG.emptyPortfolioMessage}
-      </motion.div>
-    );
+    return <div className="border-y border-border p-6 text-sm text-muted">{SITE_CONFIG.emptyPortfolioMessage}</div>;
   }
 
   return (
     <div>
-      <div className="grid gap-7 md:grid-cols-2 xl:grid-cols-3">
-        {visibleFolders.map((folder, index) => (
-          <motion.button
-            key={folder.id}
-            type="button"
-            initial={{ opacity: 0, y: -70, rotate: index % 2 === 0 ? -3 : 2 }}
-            animate={{ opacity: 1, y: 0, rotate: index % 2 === 0 ? -1.5 : 1.5 }}
-            exit={{ opacity: 0, x: -100, rotate: -5 }}
-            transition={{ type: "spring", stiffness: 130, damping: 16, delay: index * 0.05 }}
-            className={cn(
-              "paper-tape sticker group relative overflow-hidden rounded-sm bg-surface text-left focus-visible:sr-focus",
-              folder.coverUrl ? "min-h-[24rem]" : "min-h-[18rem]"
-            )}
-            onClick={() => handleOpenFolder(folder)}
-            data-cursor="photo"
-          >
-            <FolderCover folder={folder} />
-            <div className="absolute inset-0 bg-gradient-to-t from-text/78 via-text/16 to-transparent" />
-            <div className="absolute right-4 top-4 rounded-full bg-text/82 px-3 py-1 font-ui text-[0.68rem] font-extrabold uppercase tracking-[0.08em] text-white backdrop-blur">
-              {formatClickCount(albumClicks[folder.id] ?? 0)}
-            </div>
-            <div className="absolute inset-x-0 bottom-0 p-5">
-              <span className="w-fit rotate-[-3deg] bg-highlight px-3 py-1 font-ui text-xs font-extrabold uppercase text-text">
-                {folder.itemCount} fotos
+      <div className="grid gap-x-5 gap-y-12 md:grid-cols-12">
+        {visibleFolders.map((folder, index) => {
+          const layoutIndex = index % PROJECT_LAYOUTS.length;
+          return (
+            <motion.button
+              key={folder.id}
+              type="button"
+              initial={{ opacity: 0, y: 34 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.12 }}
+              transition={{ duration: 0.55, delay: Math.min(index, 5) * 0.05 }}
+              className={cn("group min-w-0 text-left focus-visible:sr-focus", PROJECT_LAYOUTS[layoutIndex])}
+              onClick={() => onOpenFolder(folder)}
+              data-cursor="photo"
+            >
+              <span className={cn("relative block w-full overflow-hidden bg-highlight", PROJECT_RATIOS[layoutIndex])}>
+                <FolderCover folder={folder} />
               </span>
-              <h3 className="mt-4 font-display text-6xl uppercase leading-none text-white">{folder.name}</h3>
-              <p className="mt-2 font-ui text-xs font-bold uppercase tracking-[0.14em] text-white/80">abrir ensaio</p>
-            </div>
-          </motion.button>
-        ))}
+              <span className="mt-5 flex items-start gap-4 border-t border-border pt-4">
+                <span className="font-display text-3xl leading-none text-rose" aria-hidden="true">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block font-display text-[clamp(1.9rem,3vw,3rem)] leading-[0.95] tracking-[-0.035em] text-plum">
+                    {folder.name}
+                  </span>
+                  <span className="mt-2 flex items-center justify-between gap-3 text-[0.62rem] font-bold uppercase tracking-[0.16em] text-muted">
+                    <span>{folder.itemCount} {folder.itemCount === 1 ? "imagem" : "imagens"}</span>
+                    <ArrowRight className="text-blue transition-transform duration-300 group-hover:translate-x-1" size={17} aria-hidden="true" />
+                  </span>
+                </span>
+              </span>
+            </motion.button>
+          );
+        })}
       </div>
+
       {folders.length > 3 ? (
-        <div className="mt-10 flex justify-center">
-          <button
-            type="button"
-            className="rounded-full border border-red bg-red px-7 py-3 font-ui text-xs font-extrabold uppercase tracking-[0.14em] text-white shadow-red transition-colors hover:bg-red-dark focus-visible:sr-focus"
-            onClick={() => setShowAll((current) => !current)}
-          >
-            {showAll ? "Ver menos ensaios" : `Ver mais ensaios (${folders.length - 3})`}
+        <div className="mt-14 flex justify-center">
+          <button type="button" className="editorial-link min-h-11 focus-visible:sr-focus" onClick={() => setShowAll((current) => !current)}>
+            {showAll ? "Mostrar seleção" : `Ver todos os ${folders.length} trabalhos`}
+            <ArrowRight size={17} aria-hidden="true" />
           </button>
         </div>
       ) : null}

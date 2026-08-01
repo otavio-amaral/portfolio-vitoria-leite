@@ -1,15 +1,9 @@
-"use client";
-
-import { motion } from "framer-motion";
+import type { JSX, ReactNode } from "react";
 
 interface PageTransitionProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export function PageTransition({ children }: PageTransitionProps): JSX.Element {
-  return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}>
-      {children}
-    </motion.div>
-  );
+  return <>{children}</>;
 }

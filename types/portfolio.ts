@@ -8,6 +8,8 @@ export interface MediaItem {
   id: string;
   name: string;
   description?: string;
+  altText?: string;
+  videoUrl?: string;
   mediaType: MediaType;
   thumbnailUrl: string;
   fullUrl: string;

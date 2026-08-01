@@ -15,12 +15,13 @@ export function useRandomHeroMedia(limit: number): RandomHeroMediaState {
   });
 
   useEffect(() => {
-    let isMounted = true;
+    const controller = new AbortController();
 
     async function loadMedia(): Promise<void> {
       try {
         const response = await fetch(`/api/drive/random?limit=${limit}`, {
-          cache: "no-store"
+          cache: "no-store",
+          signal: controller.signal
         });
 
         if (!response.ok) {
@@ -29,20 +30,16 @@ export function useRandomHeroMedia(limit: number): RandomHeroMediaState {
 
         const items = (await response.json()) as MediaItem[];
 
-        if (isMounted) {
-          setState({ items, isLoading: false });
-        }
+        setState({ items, isLoading: false });
       } catch {
-        if (isMounted) {
-          setState({ items: [], isLoading: false });
-        }
+        if (!controller.signal.aborted) setState({ items: [], isLoading: false });
       }
     }
 
     void loadMedia();
 
     return () => {
-      isMounted = false;
+      controller.abort();
     };
   }, [limit]);
 

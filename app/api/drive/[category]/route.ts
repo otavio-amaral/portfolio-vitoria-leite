@@ -1,14 +1,15 @@
 import { NextResponse } from "next/server";
 import { CATEGORIES } from "@/lib/constants";
-import { getDriveFiles, getDriveFilesFromFolder, getDriveFolders } from "@/lib/drive";
+import { DriveAccessError, getDriveFiles, getDriveFilesFromAllowedFolder, getDriveFolders } from "@/lib/drive";
+import { checkRateLimit } from "@/lib/rate-limit";
 import type { Category } from "@/types/portfolio";
 
 export const revalidate = 3600;
 
 interface RouteContext {
-  params: {
+  params: Promise<{
     category: string;
-  };
+  }>;
 }
 
 function isCategory(value: string): value is Category {
@@ -16,10 +17,16 @@ function isCategory(value: string): value is Category {
 }
 
 export async function GET(request: Request, context: RouteContext): Promise<NextResponse> {
-  const { category } = context.params;
+  const rateLimit = checkRateLimit(request, "drive-category", 60);
+
+  if (!rateLimit.allowed) {
+    return NextResponse.json({ error: "Muitas solicitações. Tente novamente em instantes." }, { status: 429, headers: rateLimit.headers });
+  }
+
+  const { category } = (await context.params);
 
   if (!isCategory(category)) {
-    return NextResponse.json({ error: "Categoria inválida" }, { status: 400 });
+    return NextResponse.json({ error: "Categoria inválida" }, { status: 400, headers: rateLimit.headers });
   }
 
   try {
@@ -30,16 +37,21 @@ export async function GET(request: Request, context: RouteContext): Promise<Next
       view === "folders"
         ? await getDriveFolders(category)
         : folderId
-          ? await getDriveFilesFromFolder(category, folderId)
+          ? await getDriveFilesFromAllowedFolder(category, folderId)
           : await getDriveFiles(category);
 
     return NextResponse.json(items, {
       headers: {
-        "Cache-Control": "s-maxage=3600, stale-while-revalidate=86400"
+        "Cache-Control": "s-maxage=3600, stale-while-revalidate=86400",
+        ...rateLimit.headers
       }
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Erro desconhecido";
-    return NextResponse.json({ error: message }, { status: 500 });
+    if (error instanceof DriveAccessError) {
+      return NextResponse.json({ error: error.message }, { status: 403, headers: rateLimit.headers });
+    }
+
+    console.error("Falha ao carregar o portfólio do Google Drive", error);
+    return NextResponse.json({ error: "Não foi possível carregar o portfólio." }, { status: 502, headers: rateLimit.headers });
   }
 }

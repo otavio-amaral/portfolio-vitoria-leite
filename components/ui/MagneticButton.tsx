@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { ArrowRight } from "@phosphor-icons/react";
 import { useMagneticEffect } from "@/hooks/useMagneticEffect";
 import { cn } from "@/lib/utils";
+import type { JSX, ReactNode } from "react";
 
 interface MagneticButtonProps {
-  children: React.ReactNode;
+  children: ReactNode;
   href?: string;
   target?: React.HTMLAttributeAnchorTarget;
   rel?: string;
@@ -28,31 +30,20 @@ export function MagneticButton({
 }: MagneticButtonProps): JSX.Element {
   const { ref, position, handleMouseMove, handleMouseLeave } = useMagneticEffect();
   const classes = cn(
-    "group relative inline-flex min-h-11 items-center justify-center overflow-hidden rounded-full border px-6 py-3 font-ui text-xs font-extrabold uppercase tracking-[0.24em] shadow-[0_10px_24px_rgba(26,26,26,0.08)] transition-[border-color,box-shadow,color,transform] duration-300 focus-visible:sr-focus",
+    "group relative inline-flex min-h-14 items-center justify-center overflow-hidden border px-7 py-4 font-ui text-[0.66rem] font-bold uppercase tracking-[0.18em] transition-[background-color,border-color,color,transform] duration-300 focus-visible:sr-focus",
     variant === "solid"
-      ? "border-red bg-red text-white shadow-[0_16px_34px_rgba(232,20,43,0.28)] hover:border-red-dark hover:text-white hover:shadow-[0_20px_42px_rgba(232,20,43,0.34)]"
+      ? "border-rose bg-rose text-surface hover:border-red-dark hover:bg-red-dark"
       : variant === "whatsapp"
-        ? "border-[#25d366] bg-[#25d366] text-[#062a16] shadow-[0_16px_34px_rgba(37,211,102,0.24)] hover:border-[#128c4a] hover:text-white hover:shadow-[0_20px_42px_rgba(37,211,102,0.3)]"
-        : "border-red bg-surface/90 text-text hover:text-text hover:shadow-[0_16px_34px_rgba(26,26,26,0.12)]",
+        ? "border-plum bg-plum text-surface hover:border-red-dark hover:bg-red-dark"
+        : "border-plum bg-transparent text-plum hover:bg-plum hover:text-surface",
     className
   );
 
   const content = (
-    <>
-      <span
-        className={cn(
-          "absolute inset-0 origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100",
-          variant === "solid" ? "bg-red-dark" : variant === "whatsapp" ? "bg-[#128c4a]" : "bg-red"
-        )}
-      />
-      <span className="absolute inset-y-[-35%] left-[-35%] w-1/3 -skew-x-12 bg-white/35 opacity-0 blur-sm transition-all duration-700 group-hover:left-[115%] group-hover:opacity-100" />
-      <span className="relative z-10 flex items-center gap-2">
-        {children}
-        <span className="button-arrow inline-block transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true">
-          →
-        </span>
-      </span>
-    </>
+    <span className="relative z-10 flex items-center gap-3">
+      {children}
+      <ArrowRight className="transition-transform duration-300 group-hover:translate-x-1" size={17} aria-hidden="true" />
+    </span>
   );
 
   if (href) {
@@ -61,11 +52,11 @@ export function MagneticButton({
         className="inline-flex"
         style={{ x: position.x, y: position.y }}
         transition={{ type: "spring", stiffness: 260, damping: 16 }}
-        whileHover={{ scale: 1.035 }}
-        whileTap={{ scale: 0.97 }}
+        whileHover={{ scale: 1.015 }}
+        whileTap={{ scale: 0.985 }}
       >
         <Link
-          ref={ref as React.RefObject<HTMLAnchorElement>}
+          ref={ref as React.RefObject<HTMLAnchorElement | null>}
           href={href}
           target={target}
           rel={rel}
@@ -83,15 +74,15 @@ export function MagneticButton({
 
   return (
     <motion.button
-      ref={ref as React.RefObject<HTMLButtonElement>}
+      ref={ref as React.RefObject<HTMLButtonElement | null>}
       type={type}
       aria-label={ariaLabel}
       data-cursor="link"
       className={classes}
       style={{ x: position.x, y: position.y }}
       transition={{ type: "spring", stiffness: 260, damping: 16 }}
-      whileHover={{ scale: 1.035 }}
-      whileTap={{ scale: 0.97 }}
+      whileHover={{ scale: 1.015 }}
+      whileTap={{ scale: 0.985 }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
